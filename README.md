@@ -1,0 +1,1 @@
+# capacitor-plugin-background-mode
