@@ -178,12 +178,12 @@
       },
       {
         "name": "addListener",
-        "signature": "(eventName: 'appOnBackground', listenerFunc: BackgroundListener) => Promise<PluginListenerHandle> & PluginListenerHandle",
+        "signature": "(eventName: 'appInBackground', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle",
         "parameters": [
           {
             "name": "eventName",
             "docs": "",
-            "type": "\"appOnBackground\""
+            "type": "\"appInBackground\""
           },
           {
             "name": "listenerFunc",
@@ -195,19 +195,18 @@
         "tags": [],
         "docs": "",
         "complexTypes": [
-          "BackgroundListener",
           "PluginListenerHandle"
         ],
         "slug": "addlistener"
       },
       {
         "name": "addListener",
-        "signature": "(eventName: 'appOnForeground', listenerFunc: ForegroundListener) => Promise<PluginListenerHandle> & PluginListenerHandle",
+        "signature": "(eventName: 'appInForeground', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle",
         "parameters": [
           {
             "name": "eventName",
             "docs": "",
-            "type": "\"appOnForeground\""
+            "type": "\"appInForeground\""
           },
           {
             "name": "listenerFunc",
@@ -219,7 +218,6 @@
         "tags": [],
         "docs": "",
         "complexTypes": [
-          "ForegroundListener",
           "PluginListenerHandle"
         ],
         "slug": "addlistener"

@@ -222,12 +222,12 @@ unlock() => any
 ### addListener(...)
 
 ```typescript
-addListener(eventName: 'appOnBackground', listenerFunc: BackgroundListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'appInBackground', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 | Param              | Type                           |
 | ------------------ | ------------------------------ |
-| **`eventName`**    | <code>"appOnBackground"</code> |
+| **`eventName`**    | <code>"appInBackground"</code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>     |
 
 **Returns:** <code>any</code>
@@ -238,12 +238,12 @@ addListener(eventName: 'appOnBackground', listenerFunc: BackgroundListener) => P
 ### addListener(...)
 
 ```typescript
-addListener(eventName: 'appOnForeground', listenerFunc: ForegroundListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'appInForeground', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 | Param              | Type                           |
 | ------------------ | ------------------------------ |
-| **`eventName`**    | <code>"appOnForeground"</code> |
+| **`eventName`**    | <code>"appInForeground"</code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>     |
 
 **Returns:** <code>any</code>

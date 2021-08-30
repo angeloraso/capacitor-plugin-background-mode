@@ -19,6 +19,18 @@ public class BackgroundModePlugin extends Plugin {
         AppCompatActivity activity = getActivity();
         Context context = getContext();
         backgroundMode = new BackgroundMode(activity, context);
+        backgroundMode.setBackgroundModeEventListener(this::onBackgroundModeEvent);
+    }
+
+    void onBackgroundModeEvent(String event) {
+      JSObject jsObject = new JSObject();
+      switch (event) {
+        case BackgroundMode.EVENT_APP_IN_BACKGROUND:
+        case BackgroundMode.EVENT_APP_IN_FOREGROUND:
+          bridge.triggerWindowJSEvent(event);
+          notifyListeners(event, jsObject);
+          break;
+      }
     }
 
     @PluginMethod
@@ -77,7 +89,7 @@ public class BackgroundModePlugin extends Plugin {
         backgroundMode.disable();
         call.resolve();
     }
-    
+
     @PluginMethod
     public void getSettings(PluginCall call) {
         JSObject settings = backgroundMode.getSettings();

@@ -18,7 +18,7 @@ public class BackgroundModeSettings {
     private String closeIcon = "close-icon";
     private String closeTitle = "Close";
     private Boolean showWhen = true;
-    private Visibility visibility = Visibility.valueOf("public");
+    private Visibility visibility = Visibility.PUBLIC;
 
     public String getTitle() {
         return title;

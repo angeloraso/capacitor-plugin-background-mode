@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.Settings;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.getcapacitor.JSObject;
@@ -31,6 +32,14 @@ public class BackgroundMode implements ForegroundService.CallBack{
     private ForegroundService foregroundService;
     private Boolean mIsBound = false;
     private PowerManager.WakeLock wakeLock;
+    @Nullable
+    private BackgroundModeEventListener backgroundModeEventListener;
+    static final String EVENT_APP_IN_BACKGROUND = "appInBackground";
+    static final String EVENT_APP_IN_FOREGROUND = "appInForeground";
+
+    interface BackgroundModeEventListener {
+      void onBackgroundModeEvent(String event);
+    }
 
     // Flag indicates if the app is in background or foreground
     private boolean mInBackground = false;
@@ -148,6 +157,9 @@ public class BackgroundMode implements ForegroundService.CallBack{
 
     public void setSettings(BackgroundModeSettings settings) {
         this.settings = settings;
+        if (mInBackground) {
+          foregroundService.updateNotification(this.settings);
+        }
     }
 
     public Boolean isIgnoringBatteryOptimizations() {
@@ -211,6 +223,7 @@ public class BackgroundMode implements ForegroundService.CallBack{
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         activity.startActivity(intent);
+        backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_BACKGROUND);
     }
 
     public void moveToForeground() {
@@ -219,6 +232,7 @@ public class BackgroundMode implements ForegroundService.CallBack{
 
         clearScreenAndKeyguardFlags();
         activity.startActivity(launchIntent);
+        backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
     }
 
     public boolean isScreenOff() {
@@ -285,11 +299,18 @@ public class BackgroundMode implements ForegroundService.CallBack{
         activity.runOnUiThread(() -> activity.getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD));
     }
 
-
-
-        @Override
+    @Override
     public void onClick() {
         moveToForeground();
+    }
+
+    @Nullable
+    public BackgroundModeEventListener getBackgroundModeEventListener() {
+      return backgroundModeEventListener;
+    }
+
+    public void setBackgroundModeEventListener(@Nullable BackgroundModeEventListener backgroundModeEventListener) {
+      this.backgroundModeEventListener = backgroundModeEventListener;
     }
 
 }

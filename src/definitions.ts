@@ -18,9 +18,6 @@ export interface ISettings {
   showWhen: boolean;
   visibility: 'public' | 'private' | 'secret';
 }
-
-export type BackgroundListener = () => void;
-export type ForegroundListener = () => void;
 export interface BackgroundModePlugin {
   enable(): Promise<void>;
   disable(): Promise<void>;
@@ -40,12 +37,12 @@ export interface BackgroundModePlugin {
   unlock(): Promise<void>;
 
   addListener(
-    eventName: 'appOnBackground',
-    listenerFunc: BackgroundListener,
+    eventName: 'appInBackground',
+    listenerFunc: () => void,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   addListener(
-    eventName: 'appOnForeground',
-    listenerFunc: ForegroundListener,
+    eventName: 'appInForeground',
+    listenerFunc: () => void,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   removeAllListeners(): Promise<void>;
 }
