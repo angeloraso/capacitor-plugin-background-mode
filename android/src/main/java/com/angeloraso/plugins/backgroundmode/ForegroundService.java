@@ -36,8 +36,7 @@ public class ForegroundService extends Service {
     private PowerManager.WakeLock mWakeLock;
     private BackgroundModeSettings mSettings;
 
-    public ForegroundService() {
-    }
+    public ForegroundService() { }
 
     /**
      * Allow clients to call on to the service.
@@ -70,9 +69,9 @@ public class ForegroundService extends Service {
      * by the OS.
      */
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
+        mSettings = new BackgroundModeSettings();
         keepAwake();
     }
 
@@ -80,9 +79,9 @@ public class ForegroundService extends Service {
      * No need to run headless on destroy.
      */
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
+        mSettings = null;
         sleepWell();
     }
 
@@ -99,8 +98,7 @@ public class ForegroundService extends Service {
      * by the OS.
      */
     @SuppressLint("WakelockTimeout")
-    private void keepAwake()
-    {
+    private void keepAwake() {
         boolean isSilent = mSettings.getSilent();
         if (!isSilent) {
             startForeground(NOTIFICATION_ID, makeNotification());
@@ -129,8 +127,7 @@ public class ForegroundService extends Service {
      * Create a notification as the visible part to be able to put the service
      * in a foreground state by using the default settings.
      */
-    private Notification makeNotification()
-    {
+    private Notification makeNotification() {
         return makeNotification(mSettings);
     }
 
@@ -140,15 +137,14 @@ public class ForegroundService extends Service {
      *
      * @param settings The config settings
      */
-    private Notification makeNotification (BackgroundModeSettings settings)
-    {
+    private Notification makeNotification (BackgroundModeSettings settings) {
         // use channelId for Oreo and higher
         String CHANNEL_ID = "capacitor-plugin-background-mode-id";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // The user-visible name of the channel.
-            CharSequence name = mSettings.getChannelName();
+            CharSequence name = settings.getChannelName();
             // The user-visible description of the channel.
-            String description = mSettings.getChannelDescription();
+            String description = settings.getChannelDescription();
 
             int importance = NotificationManager.IMPORTANCE_LOW;
 
@@ -159,18 +155,18 @@ public class ForegroundService extends Service {
 
             getNotificationManager().createNotificationChannel(mChannel);
         }
-        String title = mSettings.getTitle();
-        String text = mSettings.getText();
-        boolean bigText = mSettings.getBigText();
-        String subText = mSettings.getSubText();
-        Boolean showWhen = mSettings.getShowWhen();
-        Visibility visibility = mSettings.getVisibility();
+        String title = settings.getTitle();
+        String text = settings.getText();
+        boolean bigText = settings.getBigText();
+        String subText = settings.getSubText();
+        Boolean showWhen = settings.getShowWhen();
+        Visibility visibility = settings.getVisibility();
 
         Context context = getApplicationContext();
         String pkgName  = context.getPackageName();
         Intent intent   = context.getPackageManager().getLaunchIntentForPackage(pkgName);
 
-        String iconName = mSettings.getIcon();
+        String iconName = settings.getIcon();
         int smallIcon = getIconResId(iconName);
         if (smallIcon == 0) { // If no icon at all was found, fall back to the app's icon
             smallIcon = context.getApplicationInfo().icon;
@@ -187,18 +183,18 @@ public class ForegroundService extends Service {
             notification.setSubText(subText);
         }
 
-        Boolean allowClose = mSettings.getAllowClose();
+        Boolean allowClose = settings.getAllowClose();
         if (allowClose) {
 
             final Intent clostAppIntent = new Intent("com.backgroundmode.close" + pkgName);
             final PendingIntent closeIntent = PendingIntent.getBroadcast(context, 1337, clostAppIntent, 0);
-            final String closeIconName = mSettings.getCloseIcon();
-            final String closeTitle = mSettings.getCloseTitle();
+            final String closeIconName = settings.getCloseIcon();
+            final String closeTitle = settings.getCloseTitle();
             NotificationCompat.Action.Builder closeAction = new NotificationCompat.Action.Builder(getIconResId(closeIconName), closeTitle, closeIntent);
             notification.addAction(closeAction.build());
         }
 
-        Boolean hidden = mSettings.getHidden();
+        Boolean hidden = settings.getHidden();
         if (hidden) {
             notification.setPriority(Notification.PRIORITY_MIN);
         }
@@ -209,10 +205,10 @@ public class ForegroundService extends Service {
 
         notification.setVisibility(getVisibility(visibility));
 
-        String hexColor = mSettings.getColor();
+        String hexColor = settings.getColor();
         setColor(notification, hexColor);
 
-        Boolean resume = mSettings.getResume();
+        Boolean resume = settings.getResume();
         if (intent != null && resume) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent contentIntent = PendingIntent.getActivity(
@@ -230,9 +226,8 @@ public class ForegroundService extends Service {
      *
      * @param settings The config settings
      */
-    protected void updateNotification (BackgroundModeSettings settings)
-    {
-        boolean isSilent = mSettings.getSilent();
+    protected void updateNotification (BackgroundModeSettings settings) {
+        boolean isSilent = settings.getSilent();
         if (isSilent) {
             stopForeground(true);
             return;
@@ -274,8 +269,7 @@ public class ForegroundService extends Service {
      *
      * @return The resource id or 0 if not found.
      */
-    private int getIconResId (String icon, String type)
-    {
+    private int getIconResId (String icon, String type) {
         Resources res  = getResources();
         String pkgName = getPackageName();
 
@@ -289,8 +283,7 @@ public class ForegroundService extends Service {
      *
      * @return The visibility constant if a match is found, 'private' otherwise
      */
-    private int getVisibility (Visibility visibility)
-    {
+    private int getVisibility (Visibility visibility) {
         if (visibility == Visibility.PUBLIC) {
             return Notification.VISIBILITY_PUBLIC;
         } else if (visibility == Visibility.SECRET) {
@@ -324,8 +317,7 @@ public class ForegroundService extends Service {
     /**
      * Returns the shared notification service manager.
      */
-    private NotificationManager getNotificationManager()
-    {
+    private NotificationManager getNotificationManager() {
         return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 }
