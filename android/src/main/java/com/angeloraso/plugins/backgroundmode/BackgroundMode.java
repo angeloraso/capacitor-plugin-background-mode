@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PluginCall;
 
 public class BackgroundMode implements ForegroundService.CallBack{
     private Context context;
@@ -50,14 +51,14 @@ public class BackgroundMode implements ForegroundService.CallBack{
     BackgroundMode(final AppCompatActivity activity, final Context context) {
         this.activity = activity;
         this.context = context;
-        this.settings = new BackgroundModeSettings();
+        settings = new BackgroundModeSettings();
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder iBinder) {
             foregroundService = ((ForegroundService.LocalBinder)iBinder).getService();
             foregroundService.setCallBack(BackgroundMode.this);
-            foregroundService.setSettings(settings);
+            foregroundService.updateNotification(settings);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -155,11 +156,74 @@ public class BackgroundMode implements ForegroundService.CallBack{
         return settings;
     }
 
-    public void setSettings(BackgroundModeSettings settings) {
-        this.settings = settings;
-        if (mInBackground) {
-          foregroundService.updateNotification(this.settings);
-        }
+    public void setSettings(PluginCall call) {
+      if (call.hasOption("title")) {
+        settings.setTitle((call.getString("title")));
+      }
+
+      if (call.hasOption("text")) {
+        settings.setText((call.getString("text")));
+      }
+
+      if (call.hasOption("subText")) {
+        settings.setSubText((call.getString("subText")));
+      }
+
+      if (call.hasOption("bigText")) {
+        settings.setBigText((call.getBoolean("bigText")));
+      }
+
+      if (call.hasOption("resume")) {
+        settings.setResume((call.getBoolean("resume")));
+      }
+
+      if (call.hasOption("silent")) {
+        settings.setSilent((call.getBoolean("silent")));
+      }
+
+      if (call.hasOption("hidden")) {
+        settings.setHidden((call.getBoolean("hidden")));
+      }
+
+      if (call.hasOption("color")) {
+        settings.setColor((call.getString("color")));
+      }
+
+      if (call.hasOption("icon")) {
+        settings.setIcon((call.getString("icon")));
+      }
+
+      if (call.hasOption("channelName")) {
+        settings.setChannelName((call.getString("channelName")));
+      }
+
+      if (call.hasOption("channelDescription")) {
+        settings.setChannelDescription((call.getString("channelDescription")));
+      }
+
+      if (call.hasOption("allowClose")) {
+        settings.setAllowClose((call.getBoolean("allowClose")));
+      }
+
+      if (call.hasOption("closeIcon")) {
+        settings.setCloseIcon((call.getString("closeIcon")));
+      }
+
+      if (call.hasOption("closeTitle")) {
+        settings.setCloseTitle((call.getString("closeTitle")));
+      }
+
+      if (call.hasOption("showWhen")) {
+        settings.setShowWhen((call.getBoolean("showWhen")));
+      }
+
+      if (call.hasOption("visibility")) {
+        settings.setVisibility((call.getString("visibility")));
+      }
+
+      if (mInBackground) {
+        foregroundService.updateNotification(this.settings);
+      }
     }
 
     public Boolean isIgnoringBatteryOptimizations() {
@@ -167,8 +231,8 @@ public class BackgroundMode implements ForegroundService.CallBack{
             return null;
         }
 
-        String pkgName     = activity.getPackageName();
-        PowerManager pm    = (PowerManager)activity.getSystemService(POWER_SERVICE);
+        String pkgName = activity.getPackageName();
+        PowerManager pm = (PowerManager)activity.getSystemService(POWER_SERVICE);
         boolean isIgnoring = pm.isIgnoringBatteryOptimizations(pkgName);
         return isIgnoring;
     }

@@ -1,150 +1,323 @@
 package com.angeloraso.plugins.backgroundmode;
 
-import java.lang.reflect.Field;
+import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
 
-public class BackgroundModeSettings {
-    private String title = "App is on background mode";
-    private String text = "App will start faster";
-    private String subText = "";
-    private Boolean bigText = false;
-    private Boolean resume = true;
-    private Boolean silent = false;
-    private Boolean hidden = true;
-    private String color = "55335A";
-    private String icon = "icon";
-    private String channelName = "capacitor-plugin-background-mode";
-    private String channelDescription = "capacitor plugin background mode notification";
-    private Boolean allowClose = false;
-    private String closeIcon = "close-icon";
-    private String closeTitle = "Close";
-    private Boolean showWhen = true;
-    private Visibility visibility = Visibility.PUBLIC;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Binder;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.PowerManager;
 
-    public String getTitle() {
-        return title;
+import androidx.core.app.NotificationCompat;
+
+/**
+ * Puts the service in a foreground state, where the system considers it to be
+ * something the user is actively aware of and thus not a candidate for killing
+ * when low on memory.
+ */
+public class ForegroundService extends Service {
+
+    // Fixed ID for the 'foreground' notification
+    public static final int NOTIFICATION_ID = -574543954;
+
+    private final IBinder mLocalBinder = new LocalBinder();
+    private CallBack mCallBack;
+
+    // Partial wake lock to prevent the app from going to sleep when locked
+    private PowerManager.WakeLock mWakeLock;
+    private BackgroundModeSettings mSettings;
+
+    public ForegroundService() { }
+
+    /**
+     * Allow clients to call on to the service.
+     */
+    @Override
+    public IBinder onBind (Intent intent) {
+        return mLocalBinder;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    class LocalBinder extends Binder {
+        ForegroundService getService() {
+            return ForegroundService.this;
+        }
     }
 
-    public String getText() {
-        return text;
+    public interface CallBack {
+        void onClick();
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setCallBack(CallBack callBack) {
+        mCallBack = callBack;
     }
 
-    public String getSubText() {
-        return subText;
+    public void setSettings(BackgroundModeSettings settings) {
+        this.mSettings = settings;
     }
 
-    public void setSubText(String subText) {
-        this.subText = subText;
+    /**
+     * Put the service in a foreground state to prevent app from being killed
+     * by the OS.
+     */
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mSettings = new BackgroundModeSettings();
+        keepAwake();
     }
 
-    public Boolean getBigText() {
-        return bigText;
+    /**
+     * No need to run headless on destroy.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSettings = null;
+        sleepWell();
     }
 
-    public void setBigText(Boolean bigText) {
-        this.bigText = bigText;
+    /**
+     * Prevent Android from stopping the background service automatically.
+     */
+    @Override
+    public int onStartCommand (Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 
-    public Boolean getResume() {
-        return resume;
+    /**
+     * Put the service in a foreground state to prevent app from being killed
+     * by the OS.
+     */
+    @SuppressLint("WakelockTimeout")
+    private void keepAwake() {
+        boolean isSilent = mSettings.getSilent();
+        if (!isSilent) {
+            startForeground(NOTIFICATION_ID, makeNotification());
+        }
+
+        PowerManager pm = (PowerManager)getSystemService(POWER_SERVICE);
+        mWakeLock = pm.newWakeLock(PARTIAL_WAKE_LOCK, "backgroundmode:wakelock");
+        mWakeLock.acquire();
     }
 
-    public void setResume(Boolean resume) {
-        this.resume = resume;
+    /**
+     * Stop background mode.
+     */
+    private void sleepWell()
+    {
+        stopForeground(true);
+        getNotificationManager().cancel(NOTIFICATION_ID);
+
+        if (mWakeLock != null) {
+            mWakeLock.release();
+            mWakeLock = null;
+        }
     }
 
-    public Boolean getSilent() {
-        return silent;
+    /**
+     * Create a notification as the visible part to be able to put the service
+     * in a foreground state by using the default settings.
+     */
+    private Notification makeNotification() {
+        return makeNotification(mSettings);
     }
 
-    public void setSilent(Boolean silent) {
-        this.silent = silent;
+    /**
+     * Create a notification as the visible part to be able to put the service
+     * in a foreground state.
+     *
+     * @param settings The config settings
+     */
+    private Notification makeNotification (BackgroundModeSettings settings) {
+        // use channelId for Oreo and higher
+        String CHANNEL_ID = "capacitor-plugin-background-mode-id";
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // The user-visible name of the channel.
+            CharSequence name = settings.getChannelName();
+            // The user-visible description of the channel.
+            String description = settings.getChannelDescription();
+
+            int importance = NotificationManager.IMPORTANCE_LOW;
+
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+
+            // Configure the notification channel.
+            mChannel.setDescription(description);
+
+            getNotificationManager().createNotificationChannel(mChannel);
+        }
+        String title = settings.getTitle();
+        String text = settings.getText();
+        boolean bigText = settings.getBigText();
+        String subText = settings.getSubText();
+        Boolean showWhen = settings.getShowWhen();
+        Visibility visibility = settings.getVisibility();
+
+        Context context = getApplicationContext();
+        String pkgName  = context.getPackageName();
+        Intent intent   = context.getPackageManager().getLaunchIntentForPackage(pkgName);
+
+        String iconName = settings.getIcon();
+        int smallIcon = getIconResId(iconName);
+        if (smallIcon == 0) { // If no icon at all was found, fall back to the app's icon
+            smallIcon = context.getApplicationInfo().icon;
+        }
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setOngoing(true)
+                .setSmallIcon(smallIcon)
+                .setShowWhen(showWhen);
+
+        if (!subText.equals("")) {
+            notification.setSubText(subText);
+        }
+
+        Boolean allowClose = settings.getAllowClose();
+        if (allowClose) {
+
+            final Intent clostAppIntent = new Intent("com.backgroundmode.close" + pkgName);
+            final PendingIntent closeIntent = PendingIntent.getBroadcast(context, 1337, clostAppIntent, 0);
+            final String closeIconName = settings.getCloseIcon();
+            final String closeTitle = settings.getCloseTitle();
+            NotificationCompat.Action.Builder closeAction = new NotificationCompat.Action.Builder(getIconResId(closeIconName), closeTitle, closeIntent);
+            notification.addAction(closeAction.build());
+        }
+
+        Boolean hidden = settings.getHidden();
+        if (hidden) {
+            notification.setPriority(Notification.PRIORITY_MIN);
+        }
+
+        if (bigText || text.contains("\n")) {
+            notification.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
+        }
+
+        notification.setVisibility(getVisibility(visibility));
+
+        String hexColor = settings.getColor();
+        setColor(notification, hexColor);
+
+        Boolean resume = settings.getResume();
+        if (intent != null && resume) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent contentIntent = PendingIntent.getActivity(
+                    context, NOTIFICATION_ID, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notification.setContentIntent(contentIntent);
+        }
+
+        return notification.build();
     }
 
-    public Boolean getHidden() {
-        return hidden;
+    /**
+     * Update the notification.
+     *
+     * @param settings The config settings
+     */
+    protected void updateNotification (BackgroundModeSettings settings) {
+        boolean isSilent = settings.getSilent();
+        if (isSilent) {
+            stopForeground(true);
+            return;
+        }
+
+        Notification notification = makeNotification(settings);
+        getNotificationManager().notify(NOTIFICATION_ID, notification);
     }
 
-    public void setHidden(Boolean hidden) {
-        this.hidden = hidden;
+    /**
+     * Retrieves the resource ID of the sent icon name
+     *
+     * @param name Name of the resource to return
+     */
+    private int getIconResId(String name) {
+        int resId = getIconResId(name, "mipmap");
+
+        if (resId == 0) {
+            resId = getIconResId(name, "drawable");
+        }
+
+        if (resId == 0) {
+            resId = getIconResId("icon", "mipmap");
+        }
+
+        if (resId == 0) {
+            resId = getIconResId("icon", "drawable");
+        }
+
+
+        return resId;
     }
 
-    public String getColor() {
-        return color;
+    /**
+     * Retrieve resource id of the specified icon.
+     *
+     * @param icon The name of the icon.
+     * @param type The resource type where to look for.
+     *
+     * @return The resource id or 0 if not found.
+     */
+    private int getIconResId (String icon, String type) {
+        Resources res  = getResources();
+        String pkgName = getPackageName();
+
+        return res.getIdentifier(icon, type, pkgName);
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    /**
+     * Get the visibility constant from a string.
+     *
+     * @param visibility one of 'public', 'private', 'secret'
+     *
+     * @return The visibility constant if a match is found, 'private' otherwise
+     */
+    private int getVisibility (Visibility visibility) {
+        if (visibility == Visibility.PUBLIC) {
+            return Notification.VISIBILITY_PUBLIC;
+        } else if (visibility == Visibility.SECRET) {
+            return Notification.VISIBILITY_SECRET;
+        } else {
+            return Notification.VISIBILITY_PRIVATE;
+        }
     }
 
-    public String getIcon() {
-        return icon;
+    /**
+     * Set notification color if its supported by the SDK.
+     *
+     * @param notification A Notification.Builder instance
+     * @param color An hex color (red: FF0000)
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void setColor(NotificationCompat.Builder notification, String color) {
+
+        if (Build.VERSION.SDK_INT < 21 || color == null) {
+            return;
+        }
+
+        try {
+            int aRGB = Integer.parseInt(color, 16) + 0xFF000000;
+            notification.setColor(aRGB);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public void setChannelName(String channelName) {
-        this.channelName = channelName;
-    }
-
-    public String getChannelDescription() {
-        return channelDescription;
-    }
-
-    public void setChannelDescription(String channelDescription) {
-        this.channelDescription = channelDescription;
-    }
-
-    public Boolean getAllowClose() {
-        return allowClose;
-    }
-
-    public void setAllowClose(Boolean allowClose) {
-        this.allowClose = allowClose;
-    }
-
-    public String getCloseIcon() {
-        return closeIcon;
-    }
-
-    public void setCloseIcon(String closeIcon) {
-        this.closeIcon = closeIcon;
-    }
-
-    public String getCloseTitle() {
-        return closeTitle;
-    }
-
-    public void setCloseTitle(String closeTitle) {
-        this.closeTitle = closeTitle;
-    }
-
-    public Boolean getShowWhen() {
-        return showWhen;
-    }
-
-    public void setShowWhen(Boolean showWhen) {
-        this.showWhen = showWhen;
-    }
-
-    public Visibility getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(String visibility) {
-        this.visibility = Visibility.valueOf(visibility);
+    /**
+     * Returns the shared notification service manager.
+     */
+    private NotificationManager getNotificationManager() {
+        return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 }
