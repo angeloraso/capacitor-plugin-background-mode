@@ -59,10 +59,12 @@ public class BackgroundMode implements ForegroundService.CallBack{
             foregroundService = ((ForegroundService.LocalBinder)iBinder).getService();
             foregroundService.setCallBack(BackgroundMode.this);
             foregroundService.updateNotification(settings);
+            mIsBound = true;
         }
 
         public void onServiceDisconnected(ComponentName className) {
             foregroundService = null;
+            mIsBound = false;
         }
     };
 
@@ -116,12 +118,9 @@ public class BackgroundMode implements ForegroundService.CallBack{
         try {
             context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             context.startForegroundService(intent);
-            mIsBound = true;
         } catch (Exception e) {
 
         }
-
-        mIsBound = true;
     }
 
     private void stopService() {
