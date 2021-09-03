@@ -180,7 +180,7 @@ public class BackgroundModePlugin extends Plugin {
     public void isEnabled(PluginCall call) {
         boolean isEnabled = backgroundMode.isEnabled();
         JSObject res = new JSObject();
-        res.put("isEnabled", isEnabled);
+        res.put("enabled", isEnabled);
         call.resolve(res);
     }
 
@@ -188,7 +188,7 @@ public class BackgroundModePlugin extends Plugin {
     public void isActive(PluginCall call) {
         boolean isActive = backgroundMode.isActive();
         JSObject res = new JSObject();
-        res.put("isActive", isActive);
+        res.put("activated", isActive);
         call.resolve(res);
     }
 

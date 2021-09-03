@@ -18,7 +18,7 @@ export class BackgroundModeWeb
     async setSettings(_settings: Partial<ISettings>): Promise<void>{
     throw this.unimplemented('Not implemented on web.');
   }
-    async isIgnoringBatteryOptimizations(): Promise<boolean>{
+    async isIgnoringBatteryOptimizations(): Promise<{isIgnoring: boolean}>{
     throw this.unimplemented('Not implemented on web.');
   }
     async disableBatteryOptimizations(): Promise<void>{
@@ -27,7 +27,7 @@ export class BackgroundModeWeb
     async openBatteryOptimizationsSettings(): Promise<void>{
     throw this.unimplemented('Not implemented on web.');
   }
-  async checkForegroundPermission(): Promise<boolean>{
+  async checkForegroundPermission(): Promise<{enabled: boolean}>{
     throw this.unimplemented('Not implemented on web.');
   }
     async requestForegroundPermission(): Promise<void>{
@@ -39,13 +39,13 @@ export class BackgroundModeWeb
     async moveToForeground(): Promise<void>{
     throw this.unimplemented('Not implemented on web.');
   }
-    async isScreenOff(): Promise<boolean>{
+    async isScreenOff(): Promise<{isScreenOff: boolean}>{
       throw this.unimplemented('Not implemented on web.');
     }
-    async isEnabled(): Promise<boolean>{
+    async isEnabled(): Promise<{enabled: boolean}>{
       throw this.unimplemented('Not implemented on web.');
     }
-    async isActive(): Promise<boolean>{
+    async isActive(): Promise<{activated: boolean}>{
       throw this.unimplemented('Not implemented on web.');
     }
     async wakeUp(): Promise<void>{

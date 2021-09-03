@@ -7,16 +7,26 @@ export declare class BackgroundModeWeb extends WebPlugin implements BackgroundMo
         settings: ISettings;
     }>;
     setSettings(_settings: Partial<ISettings>): Promise<void>;
-    isIgnoringBatteryOptimizations(): Promise<boolean>;
+    isIgnoringBatteryOptimizations(): Promise<{
+        isIgnoring: boolean;
+    }>;
     disableBatteryOptimizations(): Promise<void>;
     openBatteryOptimizationsSettings(): Promise<void>;
-    checkForegroundPermission(): Promise<boolean>;
+    checkForegroundPermission(): Promise<{
+        enabled: boolean;
+    }>;
     requestForegroundPermission(): Promise<void>;
     moveToBackground(): Promise<void>;
     moveToForeground(): Promise<void>;
-    isScreenOff(): Promise<boolean>;
-    isEnabled(): Promise<boolean>;
-    isActive(): Promise<boolean>;
+    isScreenOff(): Promise<{
+        isScreenOff: boolean;
+    }>;
+    isEnabled(): Promise<{
+        enabled: boolean;
+    }>;
+    isActive(): Promise<{
+        activated: boolean;
+    }>;
     wakeUp(): Promise<void>;
     unlock(): Promise<void>;
 }
