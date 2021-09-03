@@ -116,7 +116,8 @@ public class BackgroundModePlugin extends Plugin {
 
     @PluginMethod
     public void setSettings(PluginCall call) {
-        BackgroundModeSettings settings = buildSettings(call);
+        BackgroundModeSettings currentSettings = backgroundMode.getSettings();
+        BackgroundModeSettings settings = buildSettings(currentSettings, call);
         backgroundMode.setSettings(settings);
         call.resolve();
     }
@@ -203,8 +204,7 @@ public class BackgroundModePlugin extends Plugin {
         call.resolve();
     }
 
-    private BackgroundModeSettings buildSettings(PluginCall call) {
-        BackgroundModeSettings settings = new BackgroundModeSettings();
+    private BackgroundModeSettings buildSettings(BackgroundModeSettings settings, PluginCall call) {
         if (call.hasOption("title")) {
             settings.setTitle((call.getString("title")));
         }

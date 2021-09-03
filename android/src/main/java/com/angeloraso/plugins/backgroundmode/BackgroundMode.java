@@ -1,5 +1,5 @@
 package com.angeloraso.plugins.backgroundmode;
-
+import androidx.activity.OnBackPressedCallback;
 import static android.content.Context.POWER_SERVICE;
 import static android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
@@ -19,13 +19,10 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.getcapacitor.JSObject;
-import com.getcapacitor.PluginCall;
-
 public class BackgroundMode {
     private final Context mContext;
     private final AppCompatActivity mActivity;
-    private final BackgroundModeSettings mSettings;
+    private BackgroundModeSettings mSettings;
     private ForegroundService foregroundService;
     private Boolean mIsBound = false;
     private PowerManager.WakeLock wakeLock;
@@ -45,9 +42,17 @@ public class BackgroundMode {
     private boolean mIsDisabled = true;
 
     BackgroundMode(final AppCompatActivity activity, final Context context) {
-        this.mActivity = activity;
-        this.mContext = context;
+        mActivity = activity;
+        mContext = context;
         mSettings = new BackgroundModeSettings();
+        // Override back button functionality
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                moveToBackground();
+            }
+        };
+        mActivity.getOnBackPressedDispatcher().addCallback(mActivity, callback);
     }
 
     final private ServiceConnection mConnection = new ServiceConnection() {
@@ -134,7 +139,8 @@ public class BackgroundMode {
     }
 
     public void setSettings(BackgroundModeSettings settings) {
-      if (mInBackground) {
+        mSettings = settings;
+      if (mInBackground && mIsBound) {
         foregroundService.updateNotification(settings);
       }
     }
@@ -158,7 +164,6 @@ public class BackgroundMode {
         intent.setData(Uri.parse("package:" + pkgName));
 
         mActivity.startActivity(intent);
-
     }
 
     public void openBatteryOptimizationsSettings() {
