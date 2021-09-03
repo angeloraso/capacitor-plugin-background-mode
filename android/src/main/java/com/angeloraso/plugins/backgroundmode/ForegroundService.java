@@ -30,7 +30,6 @@ public class ForegroundService extends Service {
     public static final int NOTIFICATION_ID = -574543954;
 
     private final IBinder mLocalBinder = new LocalBinder();
-    private CallBack mCallBack;
 
     // Partial wake lock to prevent the app from going to sleep when locked
     private PowerManager.WakeLock mWakeLock;
@@ -50,14 +49,6 @@ public class ForegroundService extends Service {
         ForegroundService getService() {
             return ForegroundService.this;
         }
-    }
-
-    public interface CallBack {
-        void onClick();
-    }
-
-    public void setCallBack(CallBack callBack) {
-        mCallBack = callBack;
     }
 
     public void setSettings(BackgroundModeSettings settings) {
@@ -140,21 +131,19 @@ public class ForegroundService extends Service {
     private Notification makeNotification (BackgroundModeSettings settings) {
         // use channelId for Oreo and higher
         String CHANNEL_ID = "capacitor-plugin-background-mode-id";
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // The user-visible name of the channel.
-            CharSequence name = settings.getChannelName();
-            // The user-visible description of the channel.
-            String description = settings.getChannelDescription();
+        // The user-visible name of the channel.
+        CharSequence name = settings.getChannelName();
+        // The user-visible description of the channel.
+        String description = settings.getChannelDescription();
 
-            int importance = NotificationManager.IMPORTANCE_LOW;
+        int importance = NotificationManager.IMPORTANCE_LOW;
 
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+        NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
 
-            // Configure the notification channel.
-            mChannel.setDescription(description);
+        // Configure the notification channel.
+        mChannel.setDescription(description);
 
-            getNotificationManager().createNotificationChannel(mChannel);
-        }
+        getNotificationManager().createNotificationChannel(mChannel);
         String title = settings.getTitle();
         String text = settings.getText();
         boolean bigText = settings.getBigText();
@@ -186,8 +175,8 @@ public class ForegroundService extends Service {
         Boolean allowClose = settings.getAllowClose();
         if (allowClose) {
 
-            final Intent clostAppIntent = new Intent("com.backgroundmode.close" + pkgName);
-            final PendingIntent closeIntent = PendingIntent.getBroadcast(context, 1337, clostAppIntent, 0);
+            final Intent closeAppIntent = new Intent("com.backgroundmode.close" + pkgName);
+            final PendingIntent closeIntent = PendingIntent.getBroadcast(context, 1337, closeAppIntent, PendingIntent.FLAG_IMMUTABLE);
             final String closeIconName = settings.getCloseIcon();
             final String closeTitle = settings.getCloseTitle();
             NotificationCompat.Action.Builder closeAction = new NotificationCompat.Action.Builder(getIconResId(closeIconName), closeTitle, closeIntent);
@@ -196,7 +185,7 @@ public class ForegroundService extends Service {
 
         Boolean hidden = settings.getHidden();
         if (hidden) {
-            notification.setPriority(Notification.PRIORITY_MIN);
+            notification.setPriority(NotificationCompat.PRIORITY_MIN);
         }
 
         if (bigText || text.contains("\n")) {
@@ -213,7 +202,7 @@ public class ForegroundService extends Service {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent contentIntent = PendingIntent.getActivity(
                     context, NOTIFICATION_ID, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.FLAG_IMMUTABLE);
 
             notification.setContentIntent(contentIntent);
         }
@@ -302,7 +291,7 @@ public class ForegroundService extends Service {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setColor(NotificationCompat.Builder notification, String color) {
 
-        if (Build.VERSION.SDK_INT < 21 || color == null) {
+        if (color == null) {
             return;
         }
 

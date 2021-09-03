@@ -92,14 +92,32 @@ public class BackgroundModePlugin extends Plugin {
 
     @PluginMethod
     public void getSettings(PluginCall call) {
-        JSObject settings = backgroundMode.getSettings();
-        call.resolve(settings);
+        BackgroundModeSettings settings = backgroundMode.getSettings();
+        JSObject res = new JSObject();
+        res.put("title", settings.getTitle());
+        res.put("text", settings.getText());
+        res.put("subText", settings.getSubText());
+        res.put("bigText", settings.getBigText());
+        res.put("resume", settings.getResume());
+        res.put("silent", settings.getSilent());
+        res.put("hidden", settings.getHidden());
+        res.put("color", settings.getColor());
+        res.put("icon", settings.getIcon());
+        res.put("channelName", settings.getChannelName());
+        res.put("channelDescription", settings.getChannelDescription());
+        res.put("allowClose", settings.getAllowClose());
+        res.put("closeIcon", settings.getCloseIcon());
+        res.put("closeTitle", settings.getCloseTitle());
+        res.put("showWhen", settings.getShowWhen());
+        res.put("visibility", settings.getVisibility());
+        call.resolve(res);
     }
 
 
     @PluginMethod
     public void setSettings(PluginCall call) {
-        backgroundMode.setSettings(call);
+        BackgroundModeSettings settings = buildSettings(call);
+        backgroundMode.setSettings(settings);
         call.resolve();
     }
 
@@ -125,9 +143,9 @@ public class BackgroundModePlugin extends Plugin {
 
     @PluginMethod
     public void checkForegroundPermission(PluginCall call) {
-        Boolean foregroundPermission = backgroundMode.checkForegroundPermission();
+        boolean foregroundPermission = backgroundMode.checkForegroundPermission();
         JSObject res = new JSObject();
-        res.put("enabled", foregroundPermission == null ? JSObject.NULL : foregroundPermission);
+        res.put("enabled", foregroundPermission);
         call.resolve(res);
     }
 
@@ -151,25 +169,25 @@ public class BackgroundModePlugin extends Plugin {
 
     @PluginMethod
     public void isScreenOff(PluginCall call) {
-        Boolean isScreenOff = backgroundMode.isScreenOff();
+        boolean isScreenOff = backgroundMode.isScreenOff();
         JSObject res = new JSObject();
-        res.put("isScreenOff", isScreenOff == null ? JSObject.NULL : isScreenOff);
+        res.put("isScreenOff", isScreenOff);
         call.resolve(res);
     }
 
     @PluginMethod
     public void isEnabled(PluginCall call) {
-        Boolean isEnabled = backgroundMode.isEnabled();
+        boolean isEnabled = backgroundMode.isEnabled();
         JSObject res = new JSObject();
-        res.put("isEnabled", isEnabled == null ? JSObject.NULL : isEnabled);
+        res.put("isEnabled", isEnabled);
         call.resolve(res);
     }
 
     @PluginMethod
     public void isActive(PluginCall call) {
-        Boolean isActive = backgroundMode.isActive();
+        boolean isActive = backgroundMode.isActive();
         JSObject res = new JSObject();
-        res.put("isActive", isActive == null ? JSObject.NULL : isActive);
+        res.put("isActive", isActive);
         call.resolve(res);
     }
 
@@ -183,6 +201,75 @@ public class BackgroundModePlugin extends Plugin {
     public void unlock(PluginCall call) {
         backgroundMode.unlock();
         call.resolve();
+    }
+
+    private BackgroundModeSettings buildSettings(PluginCall call) {
+        BackgroundModeSettings settings = new BackgroundModeSettings();
+        if (call.hasOption("title")) {
+            settings.setTitle((call.getString("title")));
+        }
+
+        if (call.hasOption("text")) {
+            settings.setText((call.getString("text")));
+        }
+
+        if (call.hasOption("subText")) {
+            settings.setSubText((call.getString("subText")));
+        }
+
+        if (call.hasOption("bigText")) {
+            settings.setBigText((call.getBoolean("bigText")));
+        }
+
+        if (call.hasOption("resume")) {
+            settings.setResume((call.getBoolean("resume")));
+        }
+
+        if (call.hasOption("silent")) {
+            settings.setSilent((call.getBoolean("silent")));
+        }
+
+        if (call.hasOption("hidden")) {
+            settings.setHidden((call.getBoolean("hidden")));
+        }
+
+        if (call.hasOption("color")) {
+            settings.setColor((call.getString("color")));
+        }
+
+        if (call.hasOption("icon")) {
+            settings.setIcon((call.getString("icon")));
+        }
+
+        if (call.hasOption("channelName")) {
+            settings.setChannelName((call.getString("channelName")));
+        }
+
+        if (call.hasOption("channelDescription")) {
+            settings.setChannelDescription((call.getString("channelDescription")));
+        }
+
+        if (call.hasOption("allowClose")) {
+            settings.setAllowClose((call.getBoolean("allowClose")));
+        }
+
+        if (call.hasOption("closeIcon")) {
+            settings.setCloseIcon((call.getString("closeIcon")));
+        }
+
+        if (call.hasOption("closeTitle")) {
+            settings.setCloseTitle((call.getString("closeTitle")));
+        }
+
+        if (call.hasOption("showWhen")) {
+            settings.setShowWhen((call.getBoolean("showWhen")));
+        }
+
+        if (call.hasOption("visibility")) {
+            settings.setVisibility((call.getString("visibility")));
+        }
+
+        return settings;
     }
 
 }

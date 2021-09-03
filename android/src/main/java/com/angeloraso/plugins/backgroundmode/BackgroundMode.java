@@ -1,14 +1,9 @@
 package com.angeloraso.plugins.backgroundmode;
 
 import static android.content.Context.POWER_SERVICE;
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.M;
 import static android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
-import static android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
-import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -19,6 +14,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,10 +22,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 
-public class BackgroundMode implements ForegroundService.CallBack{
-    private Context context;
-    private AppCompatActivity activity;
-    private BackgroundModeSettings settings;
+public class BackgroundMode {
+    private final Context mContext;
+    private final AppCompatActivity mActivity;
+    private final BackgroundModeSettings mSettings;
     private ForegroundService foregroundService;
     private Boolean mIsBound = false;
     private PowerManager.WakeLock wakeLock;
@@ -49,16 +45,15 @@ public class BackgroundMode implements ForegroundService.CallBack{
     private boolean mIsDisabled = true;
 
     BackgroundMode(final AppCompatActivity activity, final Context context) {
-        this.activity = activity;
-        this.context = context;
-        settings = new BackgroundModeSettings();
+        this.mActivity = activity;
+        this.mContext = context;
+        mSettings = new BackgroundModeSettings();
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    final private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder iBinder) {
             foregroundService = ((ForegroundService.LocalBinder)iBinder).getService();
-            foregroundService.setCallBack(BackgroundMode.this);
-            foregroundService.updateNotification(settings);
+            foregroundService.updateNotification(mSettings);
             mIsBound = true;
         }
 
@@ -92,7 +87,7 @@ public class BackgroundMode implements ForegroundService.CallBack{
     }
 
     private void clearKeyguardFlags () {
-        activity.runOnUiThread(() -> activity.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD));
+        mActivity.runOnUiThread(() -> mActivity.setShowWhenLocked(false));
     }
 
     public void enable() {
@@ -113,13 +108,13 @@ public class BackgroundMode implements ForegroundService.CallBack{
             return;
         }
 
-        Intent intent = new Intent(context, ForegroundService.class);
+        Intent intent = new Intent(mContext, ForegroundService.class);
 
         try {
-            context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            context.startForegroundService(intent);
+            mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            mContext.startForegroundService(intent);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -128,122 +123,33 @@ public class BackgroundMode implements ForegroundService.CallBack{
             return;
         }
 
-        Intent intent = new Intent(context, ForegroundService.class);
-        context.unbindService(mConnection);
-        context.stopService(intent);
+        Intent intent = new Intent(mContext, ForegroundService.class);
+        mContext.unbindService(mConnection);
+        mContext.stopService(intent);
         mIsBound = false;
     }
 
-    public JSObject getSettings() {
-        JSObject settings = new JSObject();
-        settings.put("title", this.settings.getTitle());
-        settings.put("text", this.settings.getText());
-        settings.put("subText", this.settings.getSubText());
-        settings.put("bigText", this.settings.getBigText());
-        settings.put("resume", this.settings.getResume());
-        settings.put("silent", this.settings.getSilent());
-        settings.put("hidden", this.settings.getHidden());
-        settings.put("color", this.settings.getColor());
-        settings.put("icon", this.settings.getIcon());
-        settings.put("channelName", this.settings.getChannelName());
-        settings.put("channelDescription", this.settings.getChannelDescription());
-        settings.put("allowClose", this.settings.getAllowClose());
-        settings.put("closeIcon", this.settings.getCloseIcon());
-        settings.put("closeTitle", this.settings.getCloseTitle());
-        settings.put("showWhen", this.settings.getShowWhen());
-        settings.put("visibility", this.settings.getVisibility());
-        return settings;
+    public BackgroundModeSettings getSettings() {
+        return mSettings;
     }
 
-    public void setSettings(PluginCall call) {
-      if (call.hasOption("title")) {
-        settings.setTitle((call.getString("title")));
-      }
-
-      if (call.hasOption("text")) {
-        settings.setText((call.getString("text")));
-      }
-
-      if (call.hasOption("subText")) {
-        settings.setSubText((call.getString("subText")));
-      }
-
-      if (call.hasOption("bigText")) {
-        settings.setBigText((call.getBoolean("bigText")));
-      }
-
-      if (call.hasOption("resume")) {
-        settings.setResume((call.getBoolean("resume")));
-      }
-
-      if (call.hasOption("silent")) {
-        settings.setSilent((call.getBoolean("silent")));
-      }
-
-      if (call.hasOption("hidden")) {
-        settings.setHidden((call.getBoolean("hidden")));
-      }
-
-      if (call.hasOption("color")) {
-        settings.setColor((call.getString("color")));
-      }
-
-      if (call.hasOption("icon")) {
-        settings.setIcon((call.getString("icon")));
-      }
-
-      if (call.hasOption("channelName")) {
-        settings.setChannelName((call.getString("channelName")));
-      }
-
-      if (call.hasOption("channelDescription")) {
-        settings.setChannelDescription((call.getString("channelDescription")));
-      }
-
-      if (call.hasOption("allowClose")) {
-        settings.setAllowClose((call.getBoolean("allowClose")));
-      }
-
-      if (call.hasOption("closeIcon")) {
-        settings.setCloseIcon((call.getString("closeIcon")));
-      }
-
-      if (call.hasOption("closeTitle")) {
-        settings.setCloseTitle((call.getString("closeTitle")));
-      }
-
-      if (call.hasOption("showWhen")) {
-        settings.setShowWhen((call.getBoolean("showWhen")));
-      }
-
-      if (call.hasOption("visibility")) {
-        settings.setVisibility((call.getString("visibility")));
-      }
-
+    public void setSettings(BackgroundModeSettings settings) {
       if (mInBackground) {
-        foregroundService.updateNotification(this.settings);
+        foregroundService.updateNotification(settings);
       }
     }
 
     public Boolean isIgnoringBatteryOptimizations() {
-        if (SDK_INT < M) {
-            return null;
-        }
-
-        String pkgName = activity.getPackageName();
-        PowerManager pm = (PowerManager)activity.getSystemService(POWER_SERVICE);
-        boolean isIgnoring = pm.isIgnoringBatteryOptimizations(pkgName);
-        return isIgnoring;
+        String pkgName = mActivity.getPackageName();
+        PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
+        return pm.isIgnoringBatteryOptimizations(pkgName);
     }
 
     @SuppressLint("BatteryLife")
     public void disableBatteryOptimizations() {
         Intent intent = new Intent();
-        String pkgName = activity.getPackageName();
-        PowerManager pm = (PowerManager) activity.getSystemService(POWER_SERVICE);
-
-        if (SDK_INT < M)
-            return;
+        String pkgName = mActivity.getPackageName();
+        PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
 
         if (pm.isIgnoringBatteryOptimizations(pkgName))
             return;
@@ -251,55 +157,60 @@ public class BackgroundMode implements ForegroundService.CallBack{
         intent.setAction(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(Uri.parse("package:" + pkgName));
 
-        activity.startActivity(intent);
+        mActivity.startActivity(intent);
 
     }
 
     public void openBatteryOptimizationsSettings() {
-        if (SDK_INT < M) {
-            return;
-        }
-
         Intent intent = new Intent(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-        activity.startActivity(intent);
+        mActivity.startActivity(intent);
     }
 
     public boolean checkForegroundPermission() {
-        Boolean granted = false;
-        if (SDK_INT >= M) {
-            granted = Settings.canDrawOverlays(activity);
-        } else {
-            granted = true;
-        }
-        return granted;
+        return Settings.canDrawOverlays(mActivity);
     }
 
     public void requestForegroundPermission() {
-        if (SDK_INT >= M) {
-            String pkgName    = activity.getPackageName();
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + pkgName));
-            activity.startActivity(intent);
-        }
+        String pkgName = mActivity.getPackageName();
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + pkgName));
+        mActivity.startActivity(intent);
     }
 
     public void moveToBackground() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        activity.startActivity(intent);
-        backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_BACKGROUND);
+        if (mInBackground) {
+            return;
+        }
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            mActivity.startActivity(intent);
+            backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_BACKGROUND);
+            mInBackground = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void moveToForeground() {
-        Intent launchIntent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (!mInBackground) {
+            return;
+        }
 
-        clearScreenAndKeyguardFlags();
-        activity.startActivity(launchIntent);
-        backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
+        try {
+            Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(mActivity.getPackageName());
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            clearScreenAndKeyguardFlags();
+            mActivity.startActivity(launchIntent);
+            backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
+            mInBackground = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isScreenOff() {
-        PowerManager pm = (PowerManager) activity.getSystemService(POWER_SERVICE);
+        PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
         return !pm.isInteractive();
     }
 
@@ -312,7 +223,11 @@ public class BackgroundMode implements ForegroundService.CallBack{
     }
 
     private void clearScreenAndKeyguardFlags() {
-        activity.runOnUiThread(() -> activity.getWindow().clearFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD));
+        mActivity.runOnUiThread(() -> {
+            mActivity.setShowWhenLocked(false);
+            mActivity.setTurnScreenOn(false);
+            mActivity.getWindow().clearFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        });
     }
 
 
@@ -326,15 +241,14 @@ public class BackgroundMode implements ForegroundService.CallBack{
 
     private void acquireWakeLock()
     {
-        PowerManager pm = (PowerManager) activity.getSystemService(POWER_SERVICE);
+        PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
         releaseWakeLock();
 
         if (!isScreenOff()) {
             return;
         }
 
-        int level = PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP;
-
+        int level = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | PowerManager.ACQUIRE_CAUSES_WAKEUP;
         wakeLock = pm.newWakeLock(level, "backgroundmode:wakelock");
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(1000);
@@ -353,27 +267,25 @@ public class BackgroundMode implements ForegroundService.CallBack{
         wakeUp();
 
         addScreenAndKeyguardFlags();
-        Intent launchIntent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
-        activity.startActivity(launchIntent);
+        openApp();
 
     }
 
     private void addScreenAndKeyguardFlags() {
-        activity.runOnUiThread(() -> activity.getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD));
-    }
-
-    @Override
-    public void onClick() {
-        moveToForeground();
-    }
-
-    @Nullable
-    public BackgroundModeEventListener getBackgroundModeEventListener() {
-      return backgroundModeEventListener;
+        mActivity.runOnUiThread(() -> {
+            mActivity.setShowWhenLocked(true);
+            mActivity.setTurnScreenOn(true);
+            mActivity.getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        });
     }
 
     public void setBackgroundModeEventListener(@Nullable BackgroundModeEventListener backgroundModeEventListener) {
       this.backgroundModeEventListener = backgroundModeEventListener;
+    }
+
+    private void openApp() {
+        Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
+        mActivity.startActivity(intent);
     }
 
 }

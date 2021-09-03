@@ -1,7 +1,5 @@
 package com.angeloraso.plugins.backgroundmode;
 
-import java.lang.reflect.Field;
-
 public class BackgroundModeSettings {
     private String title = "App is on background mode";
     private String text = "App will start faster";
