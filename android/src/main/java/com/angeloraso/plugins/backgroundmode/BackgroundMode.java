@@ -84,6 +84,7 @@ public class BackgroundMode {
     public void onResume() {
         mInBackground = false;
         stopService();
+        backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
     }
 
     public void onDestroy() {
@@ -207,7 +208,6 @@ public class BackgroundMode {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             clearScreenAndKeyguardFlags();
             mActivity.startActivity(launchIntent);
-            backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
             mInBackground = false;
         } catch (Exception e) {
             e.printStackTrace();
