@@ -73,7 +73,7 @@ public class BackgroundMode {
 
     public void onPause() {
         mInBackground = true;
-        if (isEnabled()) {
+        if (!isEnabled()) {
             return;
         }
 
