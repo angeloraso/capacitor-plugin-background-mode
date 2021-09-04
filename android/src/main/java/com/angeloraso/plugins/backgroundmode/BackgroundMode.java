@@ -72,9 +72,13 @@ public class BackgroundMode {
     };
 
     public void onPause() {
+        mInBackground = true;
+        if (isEnabled()) {
+            return;
+        }
+
         try {
-            mInBackground = true;
-            enable();
+            startService();
         } finally {
             clearKeyguardFlags();
         }
@@ -82,6 +86,10 @@ public class BackgroundMode {
 
     public void onStop() {
         mInBackground = true;
+        if (!isEnabled()) {
+            return;
+        }
+
         clearKeyguardFlags();
         if (mSettings.isDisableBatteryOptimization()) {
             disableBatteryOptimizations();
@@ -95,6 +103,10 @@ public class BackgroundMode {
 
     public void onResume() {
         mInBackground = false;
+        if (!isEnabled()) {
+            return;
+        }
+        
         stopService();
         backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
     }
