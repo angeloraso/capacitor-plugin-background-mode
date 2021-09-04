@@ -17,9 +17,6 @@ npx cap sync
 * [`disable()`](#disable)
 * [`getSettings()`](#getsettings)
 * [`setSettings(...)`](#setsettings)
-* [`isIgnoringBatteryOptimizations()`](#isignoringbatteryoptimizations)
-* [`disableBatteryOptimizations()`](#disablebatteryoptimizations)
-* [`openBatteryOptimizationsSettings()`](#openbatteryoptimizationssettings)
 * [`checkForegroundPermission()`](#checkforegroundpermission)
 * [`requestForegroundPermission()`](#requestforegroundpermission)
 * [`moveToBackground()`](#movetobackground)
@@ -81,39 +78,6 @@ setSettings(settings: any) => any
 | Param          | Type             |
 | -------------- | ---------------- |
 | **`settings`** | <code>any</code> |
-
-**Returns:** <code>any</code>
-
---------------------
-
-
-### isIgnoringBatteryOptimizations()
-
-```typescript
-isIgnoringBatteryOptimizations() => any
-```
-
-**Returns:** <code>any</code>
-
---------------------
-
-
-### disableBatteryOptimizations()
-
-```typescript
-disableBatteryOptimizations() => any
-```
-
-**Returns:** <code>any</code>
-
---------------------
-
-
-### openBatteryOptimizationsSettings()
-
-```typescript
-openBatteryOptimizationsSettings() => any
-```
 
 **Returns:** <code>any</code>
 
@@ -267,24 +231,26 @@ removeAllListeners() => any
 
 #### ISettings
 
-| Prop                     | Type                                           |
-| ------------------------ | ---------------------------------------------- |
-| **`title`**              | <code>string</code>                            |
-| **`text`**               | <code>string</code>                            |
-| **`subText`**            | <code>string</code>                            |
-| **`bigText`**            | <code>boolean</code>                           |
-| **`resume`**             | <code>boolean</code>                           |
-| **`silent`**             | <code>boolean</code>                           |
-| **`hidden`**             | <code>boolean</code>                           |
-| **`color`**              | <code>string</code>                            |
-| **`icon`**               | <code>string</code>                            |
-| **`channelName`**        | <code>string</code>                            |
-| **`channelDescription`** | <code>string</code>                            |
-| **`allowClose`**         | <code>boolean</code>                           |
-| **`closeIcon`**          | <code>string</code>                            |
-| **`closeTitle`**         | <code>string</code>                            |
-| **`showWhen`**           | <code>boolean</code>                           |
-| **`visibility`**         | <code>"public" \| "private" \| "secret"</code> |
+| Prop                             | Type                                           |
+| -------------------------------- | ---------------------------------------------- |
+| **`title`**                      | <code>string</code>                            |
+| **`text`**                       | <code>string</code>                            |
+| **`subText`**                    | <code>string</code>                            |
+| **`bigText`**                    | <code>boolean</code>                           |
+| **`resume`**                     | <code>boolean</code>                           |
+| **`silent`**                     | <code>boolean</code>                           |
+| **`hidden`**                     | <code>boolean</code>                           |
+| **`color`**                      | <code>string</code>                            |
+| **`icon`**                       | <code>string</code>                            |
+| **`channelName`**                | <code>string</code>                            |
+| **`channelDescription`**         | <code>string</code>                            |
+| **`allowClose`**                 | <code>boolean</code>                           |
+| **`closeIcon`**                  | <code>string</code>                            |
+| **`closeTitle`**                 | <code>string</code>                            |
+| **`showWhen`**                   | <code>boolean</code>                           |
+| **`disableBatteryOptimization`** | <code>boolean</code>                           |
+| **`disableWebViewOptimization`** | <code>boolean</code>                           |
+| **`visibility`**                 | <code>"public" \| "private" \| "secret"</code> |
 
 
 #### PluginListenerHandle

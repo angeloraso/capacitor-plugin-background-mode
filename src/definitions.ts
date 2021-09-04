@@ -16,6 +16,8 @@ export interface ISettings {
   closeIcon: string;
   closeTitle: string;
   showWhen: boolean;
+  disableBatteryOptimization: boolean;
+  disableWebViewOptimization: boolean;
   visibility: 'public' | 'private' | 'secret';
 }
 export interface BackgroundModePlugin {
@@ -23,9 +25,6 @@ export interface BackgroundModePlugin {
   disable(): Promise<void>;
   getSettings(): Promise<{settings: ISettings}>;
   setSettings(settings: Partial<ISettings>): Promise<void>;
-  isIgnoringBatteryOptimizations(): Promise<{isIgnoring: boolean}>;
-  disableBatteryOptimizations(): Promise<void>;
-  openBatteryOptimizationsSettings(): Promise<void>;
   checkForegroundPermission(): Promise<{enabled: boolean}>;
   requestForegroundPermission(): Promise<void>;
   moveToBackground(): Promise<void>;

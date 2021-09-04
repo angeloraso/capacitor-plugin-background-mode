@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
@@ -22,9 +23,10 @@ import androidx.appcompat.app.AppCompatActivity;
 public class BackgroundMode {
     private final Context mContext;
     private final AppCompatActivity mActivity;
+    private final View mWebView;
     private BackgroundModeSettings mSettings;
     private ForegroundService foregroundService;
-    private Boolean mIsBound = false;
+    private boolean mIsBound = false;
     private PowerManager.WakeLock wakeLock;
     @Nullable
     private BackgroundModeEventListener backgroundModeEventListener;
@@ -41,9 +43,10 @@ public class BackgroundMode {
     // Flag indicates if the plugin is enabled or disabled
     private boolean mIsDisabled = true;
 
-    BackgroundMode(final AppCompatActivity activity, final Context context) {
+    BackgroundMode(final AppCompatActivity activity, final Context context, final View webView) {
         mActivity = activity;
         mContext = context;
+        mWebView = webView;
         mSettings = new BackgroundModeSettings();
         // Override back button functionality
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -78,7 +81,16 @@ public class BackgroundMode {
     }
 
     public void onStop() {
+        mInBackground = true;
         clearKeyguardFlags();
+        if (mSettings.isDisableBatteryOptimization()) {
+            disableBatteryOptimizations();
+        }
+
+        if (mSettings.isDisableWebViewOptimization()) {
+            disableWebViewOptimizations();
+        }
+        backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_BACKGROUND);
     }
 
     public void onResume() {
@@ -141,19 +153,19 @@ public class BackgroundMode {
 
     public void setSettings(BackgroundModeSettings settings) {
         mSettings = settings;
-      if (mInBackground && mIsBound) {
-        foregroundService.updateNotification(settings);
-      }
+        if (mInBackground && mIsBound) {
+            foregroundService.updateNotification(settings);
+        }
     }
 
-    public Boolean isIgnoringBatteryOptimizations() {
+    private boolean isIgnoringBatteryOptimizations() {
         String pkgName = mActivity.getPackageName();
         PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
         return pm.isIgnoringBatteryOptimizations(pkgName);
     }
 
     @SuppressLint("BatteryLife")
-    public void disableBatteryOptimizations() {
+    private void disableBatteryOptimizations() {
         Intent intent = new Intent();
         String pkgName = mActivity.getPackageName();
         PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
@@ -167,7 +179,24 @@ public class BackgroundMode {
         mActivity.startActivity(intent);
     }
 
-    public void openBatteryOptimizationsSettings() {
+    /**
+     * When activity loses focus, tell the android.webkit.WebView that it is still visible.
+     */
+    private void disableWebViewOptimizations() {
+        // Wake up the app one second after the WebView has put it to sleep
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                mWebView.dispatchWindowVisibilityChanged(View.VISIBLE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
+    }
+
+    private void openBatteryOptimizationsSettings() {
         Intent intent = new Intent(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
         mActivity.startActivity(intent);
     }
@@ -191,8 +220,6 @@ public class BackgroundMode {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             mActivity.startActivity(intent);
-            backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_BACKGROUND);
-            mInBackground = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,7 +235,6 @@ public class BackgroundMode {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             clearScreenAndKeyguardFlags();
             mActivity.startActivity(launchIntent);
-            mInBackground = false;
         } catch (Exception e) {
             e.printStackTrace();
         }

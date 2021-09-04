@@ -19,15 +19,6 @@ var capacitorBackgroundMode = (function (exports, core) {
         async setSettings(_settings) {
             throw this.unimplemented('Not implemented on web.');
         }
-        async isIgnoringBatteryOptimizations() {
-            throw this.unimplemented('Not implemented on web.');
-        }
-        async disableBatteryOptimizations() {
-            throw this.unimplemented('Not implemented on web.');
-        }
-        async openBatteryOptimizationsSettings() {
-            throw this.unimplemented('Not implemented on web.');
-        }
         async checkForegroundPermission() {
             throw this.unimplemented('Not implemented on web.');
         }

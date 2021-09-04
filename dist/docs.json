@@ -57,36 +57,6 @@
         "slug": "setsettings"
       },
       {
-        "name": "isIgnoringBatteryOptimizations",
-        "signature": "() => any",
-        "parameters": [],
-        "returns": "any",
-        "tags": [],
-        "docs": "",
-        "complexTypes": [],
-        "slug": "isignoringbatteryoptimizations"
-      },
-      {
-        "name": "disableBatteryOptimizations",
-        "signature": "() => any",
-        "parameters": [],
-        "returns": "any",
-        "tags": [],
-        "docs": "",
-        "complexTypes": [],
-        "slug": "disablebatteryoptimizations"
-      },
-      {
-        "name": "openBatteryOptimizationsSettings",
-        "signature": "() => any",
-        "parameters": [],
-        "returns": "any",
-        "tags": [],
-        "docs": "",
-        "complexTypes": [],
-        "slug": "openbatteryoptimizationssettings"
-      },
-      {
         "name": "checkForegroundPermission",
         "signature": "() => any",
         "parameters": [],
@@ -343,6 +313,20 @@
         },
         {
           "name": "showWhen",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "disableBatteryOptimization",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "disableWebViewOptimization",
           "tags": [],
           "docs": "",
           "complexTypes": [],

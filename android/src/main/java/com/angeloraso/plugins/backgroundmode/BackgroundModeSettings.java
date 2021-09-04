@@ -4,19 +4,21 @@ public class BackgroundModeSettings {
     private String title = "App is on background mode";
     private String text = "App will start faster";
     private String subText = "";
-    private Boolean bigText = false;
-    private Boolean resume = true;
-    private Boolean silent = false;
-    private Boolean hidden = true;
+    private boolean bigText = false;
+    private boolean resume = true;
+    private boolean silent = false;
+    private boolean hidden = true;
     private String color = "55335A";
     private String icon = "icon";
     private String channelName = "capacitor-plugin-background-mode";
     private String channelDescription = "capacitor plugin background mode notification";
-    private Boolean allowClose = false;
+    private boolean allowClose = false;
     private String closeIcon = "close-icon";
     private String closeTitle = "Close";
-    private Boolean showWhen = true;
+    private boolean showWhen = true;
     private Visibility visibility = Visibility.PUBLIC;
+    private boolean disableBatteryOptimization = false;
+    private boolean disableWebViewOptimization = false;
 
     public String getTitle() {
         return title;
@@ -42,35 +44,35 @@ public class BackgroundModeSettings {
         this.subText = subText;
     }
 
-    public Boolean getBigText() {
+    public boolean getBigText() {
         return bigText;
     }
 
-    public void setBigText(Boolean bigText) {
+    public void setBigText(boolean bigText) {
         this.bigText = bigText;
     }
 
-    public Boolean getResume() {
+    public boolean getResume() {
         return resume;
     }
 
-    public void setResume(Boolean resume) {
+    public void setResume(boolean resume) {
         this.resume = resume;
     }
 
-    public Boolean getSilent() {
+    public boolean getSilent() {
         return silent;
     }
 
-    public void setSilent(Boolean silent) {
+    public void setSilent(boolean silent) {
         this.silent = silent;
     }
 
-    public Boolean getHidden() {
+    public boolean getHidden() {
         return hidden;
     }
 
-    public void setHidden(Boolean hidden) {
+    public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
 
@@ -106,11 +108,11 @@ public class BackgroundModeSettings {
         this.channelDescription = channelDescription;
     }
 
-    public Boolean getAllowClose() {
+    public boolean getAllowClose() {
         return allowClose;
     }
 
-    public void setAllowClose(Boolean allowClose) {
+    public void setAllowClose(boolean allowClose) {
         this.allowClose = allowClose;
     }
 
@@ -130,11 +132,11 @@ public class BackgroundModeSettings {
         this.closeTitle = closeTitle;
     }
 
-    public Boolean getShowWhen() {
+    public boolean getShowWhen() {
         return showWhen;
     }
 
-    public void setShowWhen(Boolean showWhen) {
+    public void setShowWhen(boolean showWhen) {
         this.showWhen = showWhen;
     }
 
@@ -146,5 +148,21 @@ public class BackgroundModeSettings {
         if (visibility != null) {
             this.visibility = Visibility.valueOf(visibility);
         }
+    }
+
+    public boolean isDisableBatteryOptimization() {
+        return disableBatteryOptimization;
+    }
+
+    public void setDisableBatteryOptimization(boolean disableBatteryOptimization) {
+        this.disableBatteryOptimization = disableBatteryOptimization;
+    }
+
+    public boolean isDisableWebViewOptimization() {
+        return disableWebViewOptimization;
+    }
+
+    public void setDisableWebViewOptimization(boolean disableWebViewOptimization) {
+        this.disableWebViewOptimization = disableWebViewOptimization;
     }
 }

@@ -6,39 +6,30 @@ export class BackgroundModeWeb
   extends WebPlugin
   implements BackgroundModePlugin {
     async enable(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
     async disable(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
     async getSettings(): Promise<{settings: ISettings}>{
       throw this.unimplemented('Not implemented on web.');
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async setSettings(_settings: Partial<ISettings>): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
-    async isIgnoringBatteryOptimizations(): Promise<{isIgnoring: boolean}>{
-    throw this.unimplemented('Not implemented on web.');
-  }
-    async disableBatteryOptimizations(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
-    async openBatteryOptimizationsSettings(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
-  async checkForegroundPermission(): Promise<{enabled: boolean}>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
+    async checkForegroundPermission(): Promise<{enabled: boolean}>{
+      throw this.unimplemented('Not implemented on web.');
+    }
     async requestForegroundPermission(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
     async moveToBackground(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
     async moveToForeground(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
     async isScreenOff(): Promise<{isScreenOff: boolean}>{
       throw this.unimplemented('Not implemented on web.');
     }
@@ -49,9 +40,9 @@ export class BackgroundModeWeb
       throw this.unimplemented('Not implemented on web.');
     }
     async wakeUp(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
     async unlock(): Promise<void>{
-    throw this.unimplemented('Not implemented on web.');
-  }
+      throw this.unimplemented('Not implemented on web.');
+    }
 }

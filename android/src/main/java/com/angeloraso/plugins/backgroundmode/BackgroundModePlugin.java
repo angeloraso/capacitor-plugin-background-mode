@@ -1,6 +1,7 @@
 package com.angeloraso.plugins.backgroundmode;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +19,8 @@ public class BackgroundModePlugin extends Plugin {
     public void load() {
         AppCompatActivity activity = getActivity();
         Context context = getContext();
-        backgroundMode = new BackgroundMode(activity, context);
+        View webView = bridge.getWebView();
+        backgroundMode = new BackgroundMode(activity, context, webView);
         backgroundMode.setBackgroundModeEventListener(this::onBackgroundModeEvent);
     }
 
@@ -110,6 +112,8 @@ public class BackgroundModePlugin extends Plugin {
         res.put("closeTitle", settings.getCloseTitle());
         res.put("showWhen", settings.getShowWhen());
         res.put("visibility", settings.getVisibility());
+        res.put("disableBatteryOptimization", settings.isDisableBatteryOptimization());
+        res.put("disableWebViewOptimization", settings.isDisableWebViewOptimization());
         call.resolve(res);
     }
 
@@ -119,26 +123,6 @@ public class BackgroundModePlugin extends Plugin {
         BackgroundModeSettings currentSettings = backgroundMode.getSettings();
         BackgroundModeSettings settings = buildSettings(currentSettings, call);
         backgroundMode.setSettings(settings);
-        call.resolve();
-    }
-
-    @PluginMethod
-    public void isIgnoringBatteryOptimizations(PluginCall call) {
-        Boolean isIgnoring = backgroundMode.isIgnoringBatteryOptimizations();
-        JSObject res = new JSObject();
-        res.put("isIgnoring", isIgnoring == null ? JSObject.NULL : isIgnoring);
-        call.resolve(res);
-    }
-
-    @PluginMethod
-    public void disableBatteryOptimizations(PluginCall call) {
-        backgroundMode.disableBatteryOptimizations();
-        call.resolve();
-    }
-
-    @PluginMethod
-    public void openBatteryOptimizationsSettings(PluginCall call) {
-        backgroundMode.openBatteryOptimizationsSettings();
         call.resolve();
     }
 
@@ -267,6 +251,14 @@ public class BackgroundModePlugin extends Plugin {
 
         if (call.hasOption("visibility")) {
             settings.setVisibility((call.getString("visibility")));
+        }
+
+        if (call.hasOption("disableBatteryOptimization")) {
+            settings.setDisableBatteryOptimization((call.getBoolean("disableBatteryOptimization")));
+        }
+
+        if (call.hasOption("disableWebViewOptimization")) {
+            settings.setDisableWebViewOptimization((call.getBoolean("disableWebViewOptimization")));
         }
 
         return settings;
