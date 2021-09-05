@@ -1,5 +1,4 @@
 package com.angeloraso.plugins.backgroundmode;
-import androidx.activity.OnBackPressedCallback;
 import static android.content.Context.POWER_SERVICE;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
@@ -50,14 +49,6 @@ public class BackgroundMode {
         mContext = context;
         mWebView = webView;
         mSettings = new BackgroundModeSettings();
-        // Override back button functionality
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                moveToBackground();
-            }
-        };
-        mActivity.getOnBackPressedDispatcher().addCallback(mActivity, callback);
     }
 
     final private ServiceConnection mConnection = new ServiceConnection() {
