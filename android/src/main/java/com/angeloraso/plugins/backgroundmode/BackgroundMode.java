@@ -1,9 +1,11 @@
 package com.angeloraso.plugins.backgroundmode;
 import androidx.activity.OnBackPressedCallback;
 import static android.content.Context.POWER_SERVICE;
-import static android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
+import static android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -15,12 +17,12 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
-import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class BackgroundMode {
+    private final int FLAGS = FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD;
     private final Context mContext;
     private final AppCompatActivity mActivity;
     private final View mWebView;
@@ -34,7 +36,7 @@ public class BackgroundMode {
     static final String EVENT_APP_IN_FOREGROUND = "appInForeground";
 
     interface BackgroundModeEventListener {
-      void onBackgroundModeEvent(String event);
+        void onBackgroundModeEvent(String event);
     }
 
     // Flag indicates if the app is in background or foreground
@@ -106,7 +108,7 @@ public class BackgroundMode {
         if (!isEnabled()) {
             return;
         }
-        
+
         stopService();
         backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_FOREGROUND);
     }
@@ -117,7 +119,7 @@ public class BackgroundMode {
     }
 
     private void clearKeyguardFlags () {
-        mActivity.runOnUiThread(() -> mActivity.setShowWhenLocked(false));
+        mActivity.runOnUiThread(() -> mActivity.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD));
     }
 
     public void enable() {
@@ -170,21 +172,16 @@ public class BackgroundMode {
         }
     }
 
-    private boolean isIgnoringBatteryOptimizations() {
-        String pkgName = mActivity.getPackageName();
-        PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
-        return pm.isIgnoringBatteryOptimizations(pkgName);
-    }
-
     @SuppressLint("BatteryLife")
     private void disableBatteryOptimizations() {
-        Intent intent = new Intent();
         String pkgName = mActivity.getPackageName();
         PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
 
-        if (pm.isIgnoringBatteryOptimizations(pkgName))
+        if (pm.isIgnoringBatteryOptimizations(pkgName)) {
             return;
+        }
 
+        Intent intent = new Intent();
         intent.setAction(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(Uri.parse("package:" + pkgName));
 
@@ -206,11 +203,6 @@ public class BackgroundMode {
         });
 
         thread.start();
-    }
-
-    private void openBatteryOptimizationsSettings() {
-        Intent intent = new Intent(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-        mActivity.startActivity(intent);
     }
 
     public boolean checkForegroundPermission() {
@@ -269,7 +261,7 @@ public class BackgroundMode {
         mActivity.runOnUiThread(() -> {
             mActivity.setShowWhenLocked(false);
             mActivity.setTurnScreenOn(false);
-            mActivity.getWindow().clearFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+            mActivity.getWindow().clearFlags(FLAGS);
         });
     }
 
@@ -282,8 +274,8 @@ public class BackgroundMode {
         }
     }
 
-    private void acquireWakeLock()
-    {
+    @SuppressWarnings("deprecation")
+    private void acquireWakeLock() {
         PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
         releaseWakeLock();
 
@@ -291,7 +283,7 @@ public class BackgroundMode {
             return;
         }
 
-        int level = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | PowerManager.ACQUIRE_CAUSES_WAKEUP;
+        int level = PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP;
         wakeLock = pm.newWakeLock(level, "backgroundmode:wakelock");
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(1000);
@@ -304,26 +296,23 @@ public class BackgroundMode {
         }
     }
 
-
-
     public void unlock() {
         wakeUp();
 
         addScreenAndKeyguardFlags();
         openApp();
-
     }
 
     private void addScreenAndKeyguardFlags() {
         mActivity.runOnUiThread(() -> {
             mActivity.setShowWhenLocked(true);
             mActivity.setTurnScreenOn(true);
-            mActivity.getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+            mActivity.getWindow().addFlags(FLAGS);
         });
     }
 
     public void setBackgroundModeEventListener(@Nullable BackgroundModeEventListener backgroundModeEventListener) {
-      this.backgroundModeEventListener = backgroundModeEventListener;
+        this.backgroundModeEventListener = backgroundModeEventListener;
     }
 
     private void openApp() {
