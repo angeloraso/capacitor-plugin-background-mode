@@ -78,6 +78,7 @@ public class BackgroundModePlugin extends Plugin {
     @Override
     public void handleOnDestroy() {
         backgroundMode.onDestroy();
+        unsetAppListeners();
     }
 
     @PluginMethod
@@ -262,6 +263,18 @@ public class BackgroundModePlugin extends Plugin {
         }
 
         return settings;
+    }
+
+    @Override
+    @PluginMethod(returnType = PluginMethod.RETURN_NONE)
+    public void removeAllListeners(PluginCall call) {
+        super.removeAllListeners(call);
+        unsetAppListeners();
+    }
+
+    private void unsetAppListeners() {
+        bridge.getApp().setStatusChangeListener(null);
+        bridge.getApp().setAppRestoredListener(null);
     }
 
 }
