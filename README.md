@@ -19,6 +19,8 @@ npx cap sync
 * [`setSettings(...)`](#setsettings)
 * [`checkForegroundPermission()`](#checkforegroundpermission)
 * [`requestForegroundPermission()`](#requestforegroundpermission)
+* [`isIgnoringBatteryOptimizations()`](#isignoringbatteryoptimizations)
+* [`disableBatteryOptimizations()`](#disablebatteryoptimizations)
 * [`moveToBackground()`](#movetobackground)
 * [`moveToForeground()`](#movetoforeground)
 * [`isScreenOff()`](#isscreenoff)
@@ -99,6 +101,28 @@ checkForegroundPermission() => any
 
 ```typescript
 requestForegroundPermission() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### isIgnoringBatteryOptimizations()
+
+```typescript
+isIgnoringBatteryOptimizations() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### disableBatteryOptimizations()
+
+```typescript
+disableBatteryOptimizations() => any
 ```
 
 **Returns:** <code>any</code>
@@ -248,7 +272,6 @@ removeAllListeners() => any
 | **`closeIcon`**                  | <code>string</code>                            |
 | **`closeTitle`**                 | <code>string</code>                            |
 | **`showWhen`**                   | <code>boolean</code>                           |
-| **`disableBatteryOptimization`** | <code>boolean</code>                           |
 | **`disableWebViewOptimization`** | <code>boolean</code>                           |
 | **`visibility`**                 | <code>"public" \| "private" \| "secret"</code> |
 

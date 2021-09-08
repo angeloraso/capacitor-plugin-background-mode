@@ -17,7 +17,6 @@ public class BackgroundModeSettings {
     private String closeTitle = "Close";
     private boolean showWhen = true;
     private Visibility visibility = Visibility.PUBLIC;
-    private boolean disableBatteryOptimization = false;
     private boolean disableWebViewOptimization = false;
 
     public String getTitle() {
@@ -148,14 +147,6 @@ public class BackgroundModeSettings {
         if (visibility != null) {
             this.visibility = Visibility.valueOf(visibility);
         }
-    }
-
-    public boolean isDisableBatteryOptimization() {
-        return disableBatteryOptimization;
-    }
-
-    public void setDisableBatteryOptimization(boolean disableBatteryOptimization) {
-        this.disableBatteryOptimization = disableBatteryOptimization;
     }
 
     public boolean isDisableWebViewOptimization() {

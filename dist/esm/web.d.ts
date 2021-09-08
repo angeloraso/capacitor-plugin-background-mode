@@ -11,6 +11,10 @@ export declare class BackgroundModeWeb extends WebPlugin implements BackgroundMo
         enabled: boolean;
     }>;
     requestForegroundPermission(): Promise<void>;
+    isIgnoringBatteryOptimizations(): Promise<{
+        isIgnoring: boolean;
+    }>;
+    disableBatteryOptimizations(): Promise<void>;
     moveToBackground(): Promise<void>;
     moveToForeground(): Promise<void>;
     isScreenOff(): Promise<{

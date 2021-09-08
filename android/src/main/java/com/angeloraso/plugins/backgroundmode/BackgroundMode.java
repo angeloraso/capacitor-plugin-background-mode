@@ -84,9 +84,6 @@ public class BackgroundMode {
         }
 
         clearKeyguardFlags();
-        if (mSettings.isDisableBatteryOptimization()) {
-            disableBatteryOptimizations();
-        }
 
         if (mSettings.isDisableWebViewOptimization()) {
             disableWebViewOptimizations();
@@ -163,15 +160,20 @@ public class BackgroundMode {
         }
     }
 
-    @SuppressLint("BatteryLife")
-    private void disableBatteryOptimizations() {
+    public boolean isIgnoringBatteryOptimizations() {
         String pkgName = mActivity.getPackageName();
         PowerManager pm = (PowerManager) mActivity.getSystemService(POWER_SERVICE);
+        boolean isIgnoring = pm.isIgnoringBatteryOptimizations(pkgName);
+        return isIgnoring;
+    }
 
-        if (pm.isIgnoringBatteryOptimizations(pkgName)) {
+    @SuppressLint("BatteryLife")
+    public void disableBatteryOptimizations() {
+        if (isIgnoringBatteryOptimizations()) {
             return;
         }
 
+        String pkgName = mActivity.getPackageName();
         Intent intent = new Intent();
         intent.setAction(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(Uri.parse("package:" + pkgName));

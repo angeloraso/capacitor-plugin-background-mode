@@ -19,6 +19,12 @@ export class BackgroundModeWeb extends WebPlugin {
     async requestForegroundPermission() {
         throw this.unimplemented('Not implemented on web.');
     }
+    async isIgnoringBatteryOptimizations() {
+        throw this.unimplemented('Not implemented on web.');
+    }
+    async disableBatteryOptimizations() {
+        throw this.unimplemented('Not implemented on web.');
+    }
     async moveToBackground() {
         throw this.unimplemented('Not implemented on web.');
     }

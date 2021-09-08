@@ -24,6 +24,12 @@ export class BackgroundModeWeb
     async requestForegroundPermission(): Promise<void>{
       throw this.unimplemented('Not implemented on web.');
     }
+    async isIgnoringBatteryOptimizations(): Promise<{isIgnoring: boolean}>{
+      throw this.unimplemented('Not implemented on web.');
+    }
+    async disableBatteryOptimizations(): Promise<void>{
+      throw this.unimplemented('Not implemented on web.');
+    }
     async moveToBackground(): Promise<void>{
       throw this.unimplemented('Not implemented on web.');
     }

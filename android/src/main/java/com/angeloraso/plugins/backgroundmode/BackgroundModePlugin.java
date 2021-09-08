@@ -113,7 +113,6 @@ public class BackgroundModePlugin extends Plugin {
         res.put("closeTitle", settings.getCloseTitle());
         res.put("showWhen", settings.getShowWhen());
         res.put("visibility", settings.getVisibility());
-        res.put("disableBatteryOptimization", settings.isDisableBatteryOptimization());
         res.put("disableWebViewOptimization", settings.isDisableWebViewOptimization());
         call.resolve(res);
     }
@@ -189,6 +188,21 @@ public class BackgroundModePlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void isIgnoringBatteryOptimizations(PluginCall call) {
+        boolean isIgnoring = backgroundMode.isIgnoringBatteryOptimizations();
+        JSObject res = new JSObject();
+        res.put("isIgnoring", isIgnoring);
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void disableBatteryOptimizations(PluginCall call) {
+        backgroundMode.disableBatteryOptimizations();
+        call.resolve();
+    }
+
+
     private BackgroundModeSettings buildSettings(BackgroundModeSettings settings, PluginCall call) {
         if (call.hasOption("title")) {
             settings.setTitle((call.getString("title")));
@@ -252,10 +266,6 @@ public class BackgroundModePlugin extends Plugin {
 
         if (call.hasOption("visibility")) {
             settings.setVisibility((call.getString("visibility")));
-        }
-
-        if (call.hasOption("disableBatteryOptimization")) {
-            settings.setDisableBatteryOptimization((call.getBoolean("disableBatteryOptimization")));
         }
 
         if (call.hasOption("disableWebViewOptimization")) {

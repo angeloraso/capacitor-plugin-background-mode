@@ -77,6 +77,26 @@
         "slug": "requestforegroundpermission"
       },
       {
+        "name": "isIgnoringBatteryOptimizations",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "isignoringbatteryoptimizations"
+      },
+      {
+        "name": "disableBatteryOptimizations",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "disablebatteryoptimizations"
+      },
+      {
         "name": "moveToBackground",
         "signature": "() => any",
         "parameters": [],
@@ -313,13 +333,6 @@
         },
         {
           "name": "showWhen",
-          "tags": [],
-          "docs": "",
-          "complexTypes": [],
-          "type": "boolean"
-        },
-        {
-          "name": "disableBatteryOptimization",
           "tags": [],
           "docs": "",
           "complexTypes": [],
