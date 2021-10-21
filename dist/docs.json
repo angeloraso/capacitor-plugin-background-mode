@@ -97,6 +97,26 @@
         "slug": "disablebatteryoptimizations"
       },
       {
+        "name": "enableWebViewOptimizations",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "enablewebviewoptimizations"
+      },
+      {
+        "name": "disableWebViewOptimizations",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "disablewebviewoptimizations"
+      },
+      {
         "name": "moveToBackground",
         "signature": "() => any",
         "parameters": [],

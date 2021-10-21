@@ -1,4 +1,5 @@
 package com.angeloraso.plugins.backgroundmode;
+
 import static android.content.Context.POWER_SERVICE;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
@@ -16,11 +17,11 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class BackgroundMode {
+
     private final int FLAGS = FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD;
     private final Context mContext;
     private final AppCompatActivity mActivity;
@@ -29,8 +30,10 @@ public class BackgroundMode {
     private ForegroundService foregroundService;
     private boolean mIsBound = false;
     private PowerManager.WakeLock wakeLock;
+
     @Nullable
     private BackgroundModeEventListener backgroundModeEventListener;
+
     static final String EVENT_APP_IN_BACKGROUND = "appInBackground";
     static final String EVENT_APP_IN_FOREGROUND = "appInForeground";
 
@@ -51,9 +54,9 @@ public class BackgroundMode {
         mSettings = new BackgroundModeSettings();
     }
 
-    final private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder iBinder) {
-            foregroundService = ((ForegroundService.LocalBinder)iBinder).getService();
+            foregroundService = ((ForegroundService.LocalBinder) iBinder).getService();
             foregroundService.updateNotification(mSettings);
             mIsBound = true;
         }
@@ -85,8 +88,23 @@ public class BackgroundMode {
 
         clearKeyguardFlags();
 
+        /**
+         * When activity loses focus, if disableWebViewOptimization setting is true, tell the android.webkit.WebView that it is still visible.
+         * */
         if (mSettings.isDisableWebViewOptimization()) {
-            disableWebViewOptimizations();
+            // Wake up the app one second after the WebView has put it to sleep
+            Thread thread = new Thread(
+                    () -> {
+                        try {
+                            Thread.sleep(1000);
+                            mWebView.dispatchWindowVisibilityChanged(View.VISIBLE);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+            );
+
+            thread.start();
         }
         backgroundModeEventListener.onBackgroundModeEvent(EVENT_APP_IN_BACKGROUND);
     }
@@ -106,7 +124,7 @@ public class BackgroundMode {
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
-    private void clearKeyguardFlags () {
+    private void clearKeyguardFlags() {
         mActivity.runOnUiThread(() -> mActivity.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD));
     }
 
@@ -181,21 +199,12 @@ public class BackgroundMode {
         mActivity.startActivity(intent);
     }
 
-    /**
-     * When activity loses focus, tell the android.webkit.WebView that it is still visible.
-     */
-    private void disableWebViewOptimizations() {
-        // Wake up the app one second after the WebView has put it to sleep
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                mWebView.dispatchWindowVisibilityChanged(View.VISIBLE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        thread.start();
+    public void enableWebViewOptimizations() {
+        mSettings.setDisableWebViewOptimization(false);
+    }
+    
+    public void disableWebViewOptimizations() {
+        mSettings.setDisableWebViewOptimization(true);
     }
 
     public boolean checkForegroundPermission() {
@@ -251,13 +260,14 @@ public class BackgroundMode {
     }
 
     private void clearScreenAndKeyguardFlags() {
-        mActivity.runOnUiThread(() -> {
-            mActivity.setShowWhenLocked(false);
-            mActivity.setTurnScreenOn(false);
-            mActivity.getWindow().clearFlags(FLAGS);
-        });
+        mActivity.runOnUiThread(
+            () -> {
+                mActivity.setShowWhenLocked(false);
+                mActivity.setTurnScreenOn(false);
+                mActivity.getWindow().clearFlags(FLAGS);
+            }
+        );
     }
-
 
     public void wakeUp() {
         try {
@@ -297,11 +307,13 @@ public class BackgroundMode {
     }
 
     private void addScreenAndKeyguardFlags() {
-        mActivity.runOnUiThread(() -> {
-            mActivity.setShowWhenLocked(true);
-            mActivity.setTurnScreenOn(true);
-            mActivity.getWindow().addFlags(FLAGS);
-        });
+        mActivity.runOnUiThread(
+            () -> {
+                mActivity.setShowWhenLocked(true);
+                mActivity.setTurnScreenOn(true);
+                mActivity.getWindow().addFlags(FLAGS);
+            }
+        );
     }
 
     public void setBackgroundModeEventListener(@Nullable BackgroundModeEventListener backgroundModeEventListener) {
@@ -312,5 +324,4 @@ public class BackgroundMode {
         Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
         mActivity.startActivity(intent);
     }
-
 }

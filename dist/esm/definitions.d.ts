@@ -33,6 +33,8 @@ export interface BackgroundModePlugin {
         isIgnoring: boolean;
     }>;
     disableBatteryOptimizations(): Promise<void>;
+    enableWebViewOptimizations(): Promise<void>;
+    disableWebViewOptimizations(): Promise<void>;
     moveToBackground(): Promise<void>;
     moveToForeground(): Promise<void>;
     isScreenOff(): Promise<{

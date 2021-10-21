@@ -2,9 +2,7 @@ package com.angeloraso.plugins.backgroundmode;
 
 import android.content.Context;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -25,14 +23,14 @@ public class BackgroundModePlugin extends Plugin {
     }
 
     void onBackgroundModeEvent(String event) {
-      JSObject jsObject = new JSObject();
-      switch (event) {
-        case BackgroundMode.EVENT_APP_IN_BACKGROUND:
-        case BackgroundMode.EVENT_APP_IN_FOREGROUND:
-          bridge.triggerWindowJSEvent(event);
-          notifyListeners(event, jsObject);
-          break;
-      }
+        JSObject jsObject = new JSObject();
+        switch (event) {
+            case BackgroundMode.EVENT_APP_IN_BACKGROUND:
+            case BackgroundMode.EVENT_APP_IN_FOREGROUND:
+                bridge.triggerWindowJSEvent(event);
+                notifyListeners(event, jsObject);
+                break;
+        }
     }
 
     @PluginMethod
@@ -60,7 +58,7 @@ public class BackgroundModePlugin extends Plugin {
      * Called when the activity is no longer visible to the user.
      */
     @Override
-    public void handleOnStop () {
+    public void handleOnStop() {
         backgroundMode.onStop();
     }
 
@@ -68,7 +66,7 @@ public class BackgroundModePlugin extends Plugin {
      * Called when the activity will start interacting with the user.
      */
     @Override
-    public void handleOnResume () {
+    public void handleOnResume() {
         backgroundMode.onResume();
     }
 
@@ -116,7 +114,6 @@ public class BackgroundModePlugin extends Plugin {
         res.put("disableWebViewOptimization", settings.isDisableWebViewOptimization());
         call.resolve(res);
     }
-
 
     @PluginMethod
     public void setSettings(PluginCall call) {
@@ -202,6 +199,17 @@ public class BackgroundModePlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void enableWebViewOptimizations(PluginCall call) {
+        backgroundMode.enableWebViewOptimizations();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void disableWebViewOptimizations(PluginCall call) {
+        backgroundMode.disableWebViewOptimizations();
+        call.resolve();
+    }
 
     private BackgroundModeSettings buildSettings(BackgroundModeSettings settings, PluginCall call) {
         if (call.hasOption("title")) {
@@ -286,5 +294,4 @@ public class BackgroundModePlugin extends Plugin {
         bridge.getApp().setStatusChangeListener(null);
         bridge.getApp().setAppRestoredListener(null);
     }
-
 }

@@ -21,6 +21,8 @@ npx cap sync
 * [`requestForegroundPermission()`](#requestforegroundpermission)
 * [`isIgnoringBatteryOptimizations()`](#isignoringbatteryoptimizations)
 * [`disableBatteryOptimizations()`](#disablebatteryoptimizations)
+* [`enableWebViewOptimizations()`](#enablewebviewoptimizations)
+* [`disableWebViewOptimizations()`](#disablewebviewoptimizations)
 * [`moveToBackground()`](#movetobackground)
 * [`moveToForeground()`](#movetoforeground)
 * [`isScreenOff()`](#isscreenoff)
@@ -123,6 +125,28 @@ isIgnoringBatteryOptimizations() => any
 
 ```typescript
 disableBatteryOptimizations() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### enableWebViewOptimizations()
+
+```typescript
+enableWebViewOptimizations() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### disableWebViewOptimizations()
+
+```typescript
+disableWebViewOptimizations() => any
 ```
 
 **Returns:** <code>any</code>

@@ -30,6 +30,12 @@ export class BackgroundModeWeb
     async disableBatteryOptimizations(): Promise<void>{
       throw this.unimplemented('Not implemented on web.');
     }
+    async enableWebViewOptimizations(): Promise<void>{
+      throw this.unimplemented('Not implemented on web.');
+    }
+    async disableWebViewOptimizations(): Promise<void>{
+      throw this.unimplemented('Not implemented on web.');
+    }
     async moveToBackground(): Promise<void>{
       throw this.unimplemented('Not implemented on web.');
     }

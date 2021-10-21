@@ -28,6 +28,8 @@ export interface BackgroundModePlugin {
   requestForegroundPermission(): Promise<void>;
   isIgnoringBatteryOptimizations(): Promise<{isIgnoring: boolean}>;
   disableBatteryOptimizations(): Promise<void>;
+  enableWebViewOptimizations(): Promise<void>;
+  disableWebViewOptimizations(): Promise<void>;
   moveToBackground(): Promise<void>;
   moveToForeground(): Promise<void>;
   isScreenOff(): Promise<{isScreenOff: boolean}>;
