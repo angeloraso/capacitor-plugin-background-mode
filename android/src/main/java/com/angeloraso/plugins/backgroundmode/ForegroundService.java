@@ -77,11 +77,13 @@ public class ForegroundService extends Service {
     }
 
     /**
-     * Prevent Android from stopping the background service automatically.
+     * START_REDELIVER_INTENT: If the service's process (the App) is killed before it calls stopSelf() for a given intent,
+     * that intent will be re-delivered to it until it completes (unless after some number of more tries it still
+     * can't complete, at which point the system gives up).
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     /**
