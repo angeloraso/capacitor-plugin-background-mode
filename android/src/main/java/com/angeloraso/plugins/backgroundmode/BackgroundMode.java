@@ -58,10 +58,12 @@ public class BackgroundMode {
         public void onServiceConnected(ComponentName className, IBinder iBinder) {
             foregroundService = ((ForegroundService.LocalBinder) iBinder).getService();
             foregroundService.updateNotification(mSettings);
+            mIsBound = true;
         }
 
         public void onServiceDisconnected(ComponentName className) {
             foregroundService = null;
+            mIsBound = false;
         }
     };
 
@@ -140,14 +142,14 @@ public class BackgroundMode {
     }
 
     private void startService() {
-        if (mIsDisabled || mIsBound) {
+        if (mIsDisabled || mIsBound || mConnection == null) {
             return;
         }
 
         Intent intent = new Intent(mContext, ForegroundService.class);
 
         try {
-            mIsBound = mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             mContext.startForegroundService(intent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,7 +157,7 @@ public class BackgroundMode {
     }
 
     private void stopService() {
-        if (!mIsBound) {
+        if (!mIsBound || mConnection == null) {
             return;
         }
 
