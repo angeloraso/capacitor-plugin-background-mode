@@ -30,10 +30,13 @@ npx cap sync
 * [`isActive()`](#isactive)
 * [`wakeUp()`](#wakeup)
 * [`unlock()`](#unlock)
-* [`addListener(...)`](#addlistener)
-* [`addListener(...)`](#addlistener)
+* [`addListener('appInBackground', ...)`](#addlistenerappinbackground)
+* [`addListener('appInForeground', ...)`](#addlistenerappinforeground)
+* [`removeAllListeners()`](#removealllisteners)
+* [`addListener(string, ...)`](#addlistenerstring)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -43,10 +46,8 @@ npx cap sync
 ### enable()
 
 ```typescript
-enable() => any
+enable() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -54,10 +55,8 @@ enable() => any
 ### disable()
 
 ```typescript
-disable() => any
+disable() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -65,10 +64,10 @@ disable() => any
 ### getSettings()
 
 ```typescript
-getSettings() => any
+getSettings() => Promise<{ settings: ISettings; }>
 ```
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;{ settings: <a href="#isettings">ISettings</a>; }&gt;</code>
 
 --------------------
 
@@ -76,14 +75,12 @@ getSettings() => any
 ### setSettings(...)
 
 ```typescript
-setSettings(settings: any) => any
+setSettings(settings: Partial<ISettings>) => Promise<void>
 ```
 
-| Param          | Type             |
-| -------------- | ---------------- |
-| **`settings`** | <code>any</code> |
-
-**Returns:** <code>any</code>
+| Param          | Type                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------- |
+| **`settings`** | <code><a href="#partial">Partial</a>&lt;<a href="#isettings">ISettings</a>&gt;</code> |
 
 --------------------
 
@@ -91,10 +88,10 @@ setSettings(settings: any) => any
 ### checkForegroundPermission()
 
 ```typescript
-checkForegroundPermission() => any
+checkForegroundPermission() => Promise<{ enabled: boolean; }>
 ```
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;{ enabled: boolean; }&gt;</code>
 
 --------------------
 
@@ -102,10 +99,8 @@ checkForegroundPermission() => any
 ### requestForegroundPermission()
 
 ```typescript
-requestForegroundPermission() => any
+requestForegroundPermission() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -113,10 +108,10 @@ requestForegroundPermission() => any
 ### isIgnoringBatteryOptimizations()
 
 ```typescript
-isIgnoringBatteryOptimizations() => any
+isIgnoringBatteryOptimizations() => Promise<{ isIgnoring: boolean; }>
 ```
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;{ isIgnoring: boolean; }&gt;</code>
 
 --------------------
 
@@ -124,10 +119,8 @@ isIgnoringBatteryOptimizations() => any
 ### disableBatteryOptimizations()
 
 ```typescript
-disableBatteryOptimizations() => any
+disableBatteryOptimizations() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -135,10 +128,8 @@ disableBatteryOptimizations() => any
 ### enableWebViewOptimizations()
 
 ```typescript
-enableWebViewOptimizations() => any
+enableWebViewOptimizations() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -146,10 +137,8 @@ enableWebViewOptimizations() => any
 ### disableWebViewOptimizations()
 
 ```typescript
-disableWebViewOptimizations() => any
+disableWebViewOptimizations() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -157,10 +146,8 @@ disableWebViewOptimizations() => any
 ### moveToBackground()
 
 ```typescript
-moveToBackground() => any
+moveToBackground() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -168,10 +155,8 @@ moveToBackground() => any
 ### moveToForeground()
 
 ```typescript
-moveToForeground() => any
+moveToForeground() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -179,10 +164,10 @@ moveToForeground() => any
 ### isScreenOff()
 
 ```typescript
-isScreenOff() => any
+isScreenOff() => Promise<{ isScreenOff: boolean; }>
 ```
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;{ isScreenOff: boolean; }&gt;</code>
 
 --------------------
 
@@ -190,10 +175,10 @@ isScreenOff() => any
 ### isEnabled()
 
 ```typescript
-isEnabled() => any
+isEnabled() => Promise<{ enabled: boolean; }>
 ```
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;{ enabled: boolean; }&gt;</code>
 
 --------------------
 
@@ -201,10 +186,10 @@ isEnabled() => any
 ### isActive()
 
 ```typescript
-isActive() => any
+isActive() => Promise<{ activated: boolean; }>
 ```
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;{ activated: boolean; }&gt;</code>
 
 --------------------
 
@@ -212,10 +197,8 @@ isActive() => any
 ### wakeUp()
 
 ```typescript
-wakeUp() => any
+wakeUp() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
@@ -223,15 +206,13 @@ wakeUp() => any
 ### unlock()
 
 ```typescript
-unlock() => any
+unlock() => Promise<void>
 ```
-
-**Returns:** <code>any</code>
 
 --------------------
 
 
-### addListener(...)
+### addListener('appInBackground', ...)
 
 ```typescript
 addListener(eventName: 'appInBackground', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
@@ -239,15 +220,15 @@ addListener(eventName: 'appInBackground', listenerFunc: () => void) => Promise<P
 
 | Param              | Type                           |
 | ------------------ | ------------------------------ |
-| **`eventName`**    | <code>"appInBackground"</code> |
+| **`eventName`**    | <code>'appInBackground'</code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>     |
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
 
-### addListener(...)
+### addListener('appInForeground', ...)
 
 ```typescript
 addListener(eventName: 'appInForeground', listenerFunc: () => void) => Promise<PluginListenerHandle> & PluginListenerHandle
@@ -255,10 +236,10 @@ addListener(eventName: 'appInForeground', listenerFunc: () => void) => Promise<P
 
 | Param              | Type                           |
 | ------------------ | ------------------------------ |
-| **`eventName`**    | <code>"appInForeground"</code> |
+| **`eventName`**    | <code>'appInForeground'</code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>     |
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
@@ -266,10 +247,33 @@ addListener(eventName: 'appInForeground', listenerFunc: () => void) => Promise<P
 ### removeAllListeners()
 
 ```typescript
-removeAllListeners() => any
+removeAllListeners() => Promise<void>
 ```
 
-**Returns:** <code>any</code>
+--------------------
+
+
+### addListener(string, ...)
+
+```typescript
+addListener(eventName: string, listenerFunc: (...args: any[]) => any) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                    |
+| ------------------ | --------------------------------------- |
+| **`eventName`**    | <code>string</code>                     |
+| **`listenerFunc`** | <code>(...args: any[]) =&gt; any</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
 
 --------------------
 
@@ -297,13 +301,23 @@ removeAllListeners() => any
 | **`closeTitle`**                 | <code>string</code>                            |
 | **`showWhen`**                   | <code>boolean</code>                           |
 | **`disableWebViewOptimization`** | <code>boolean</code>                           |
-| **`visibility`**                 | <code>"public" \| "private" \| "secret"</code> |
+| **`visibility`**                 | <code>'public' \| 'private' \| 'secret'</code> |
 
 
 #### PluginListenerHandle
 
-| Prop         | Type                      |
-| ------------ | ------------------------- |
-| **`remove`** | <code>() =&gt; any</code> |
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+### Type Aliases
+
+
+#### Partial
+
+Make all properties in T optional
+
+<code>{ [P in keyof T]?: T[P]; }</code>
 
 </docgen-api>

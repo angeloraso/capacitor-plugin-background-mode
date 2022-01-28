@@ -7,9 +7,9 @@
     "methods": [
       {
         "name": "enable",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -17,9 +17,9 @@
       },
       {
         "name": "disable",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -27,9 +27,9 @@
       },
       {
         "name": "getSettings",
-        "signature": "() => any",
+        "signature": "() => Promise<{ settings: ISettings; }>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<{ settings: ISettings; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [
@@ -39,15 +39,15 @@
       },
       {
         "name": "setSettings",
-        "signature": "(settings: any) => any",
+        "signature": "(settings: Partial<ISettings>) => Promise<void>",
         "parameters": [
           {
             "name": "settings",
             "docs": "",
-            "type": "any"
+            "type": "Partial<ISettings>"
           }
         ],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [
@@ -58,9 +58,9 @@
       },
       {
         "name": "checkForegroundPermission",
-        "signature": "() => any",
+        "signature": "() => Promise<{ enabled: boolean; }>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<{ enabled: boolean; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -68,9 +68,9 @@
       },
       {
         "name": "requestForegroundPermission",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -78,9 +78,9 @@
       },
       {
         "name": "isIgnoringBatteryOptimizations",
-        "signature": "() => any",
+        "signature": "() => Promise<{ isIgnoring: boolean; }>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<{ isIgnoring: boolean; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -88,9 +88,9 @@
       },
       {
         "name": "disableBatteryOptimizations",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -98,9 +98,9 @@
       },
       {
         "name": "enableWebViewOptimizations",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -108,9 +108,9 @@
       },
       {
         "name": "disableWebViewOptimizations",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -118,9 +118,9 @@
       },
       {
         "name": "moveToBackground",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -128,9 +128,9 @@
       },
       {
         "name": "moveToForeground",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -138,9 +138,9 @@
       },
       {
         "name": "isScreenOff",
-        "signature": "() => any",
+        "signature": "() => Promise<{ isScreenOff: boolean; }>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<{ isScreenOff: boolean; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -148,9 +148,9 @@
       },
       {
         "name": "isEnabled",
-        "signature": "() => any",
+        "signature": "() => Promise<{ enabled: boolean; }>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<{ enabled: boolean; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -158,9 +158,9 @@
       },
       {
         "name": "isActive",
-        "signature": "() => any",
+        "signature": "() => Promise<{ activated: boolean; }>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<{ activated: boolean; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -168,9 +168,9 @@
       },
       {
         "name": "wakeUp",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -178,9 +178,9 @@
       },
       {
         "name": "unlock",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
@@ -193,7 +193,7 @@
           {
             "name": "eventName",
             "docs": "",
-            "type": "\"appInBackground\""
+            "type": "'appInBackground'"
           },
           {
             "name": "listenerFunc",
@@ -201,13 +201,13 @@
             "type": "() => void"
           }
         ],
-        "returns": "any",
+        "returns": "Promise<PluginListenerHandle> & PluginListenerHandle",
         "tags": [],
         "docs": "",
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistener"
+        "slug": "addlistenerappinbackground"
       },
       {
         "name": "addListener",
@@ -216,7 +216,7 @@
           {
             "name": "eventName",
             "docs": "",
-            "type": "\"appInForeground\""
+            "type": "'appInForeground'"
           },
           {
             "name": "listenerFunc",
@@ -224,26 +224,63 @@
             "type": "() => void"
           }
         ],
-        "returns": "any",
+        "returns": "Promise<PluginListenerHandle> & PluginListenerHandle",
         "tags": [],
         "docs": "",
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistener"
+        "slug": "addlistenerappinforeground"
       },
       {
         "name": "removeAllListeners",
-        "signature": "() => any",
+        "signature": "() => Promise<void>",
         "parameters": [],
-        "returns": "any",
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "removealllisteners"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: string, listenerFunc: (...args: any[]) => any) => Promise<PluginListenerHandle>",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "string"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(...args: any[]) => any"
+          }
+        ],
+        "returns": "Promise<PluginListenerHandle>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle"
+        ],
+        "slug": "addlistenerstring"
+      },
+      {
+        "name": "removeAllListeners",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
         "slug": "removealllisteners"
       }
     ],
-    "properties": []
+    "properties": [],
+    "importObject": [
+      "PluginListenerHandle",
+      "ISettings"
+    ]
   },
   "interfaces": [
     {
@@ -370,8 +407,12 @@
           "tags": [],
           "docs": "",
           "complexTypes": [],
-          "type": "\"public\" | \"private\" | \"secret\""
+          "type": "'public' | 'private' | 'secret'"
         }
+      ],
+      "importObject": [
+        "PluginListenerHandle",
+        "BackgroundModePlugin"
       ]
     },
     {
@@ -386,10 +427,39 @@
           "tags": [],
           "docs": "",
           "complexTypes": [],
-          "type": "() => any"
+          "type": "() => Promise<void>"
+        }
+      ],
+      "importObject": [
+        "PluginRegistry",
+        "CapacitorException",
+        "CapacitorGlobal",
+        "RegisterPlugin",
+        "PluginImplementations",
+        "Plugin",
+        "PermissionState",
+        "PluginResultData",
+        "PluginResultError",
+        "PluginCallback"
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "Partial",
+      "slug": "partial",
+      "docs": "Make all properties in T optional",
+      "types": [
+        {
+          "text": "{\r\n    [P in keyof T]?: T[P];\r\n}",
+          "complexTypes": [
+            "T",
+            "P"
+          ]
         }
       ]
     }
   ],
-  "enums": []
+  "pluginConfigs": []
 }
