@@ -58,12 +58,10 @@ public class BackgroundMode {
         public void onServiceConnected(ComponentName className, IBinder iBinder) {
             foregroundService = ((ForegroundService.LocalBinder) iBinder).getService();
             foregroundService.updateNotification(mSettings);
-            mIsBound = true;
         }
 
         public void onServiceDisconnected(ComponentName className) {
             foregroundService = null;
-            mIsBound = false;
         }
     };
 
@@ -149,7 +147,7 @@ public class BackgroundMode {
         Intent intent = new Intent(mContext, ForegroundService.class);
 
         try {
-            mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            mIsBound = mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             mContext.startForegroundService(intent);
         } catch (Exception e) {
             e.printStackTrace();
