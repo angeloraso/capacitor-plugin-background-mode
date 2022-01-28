@@ -67,7 +67,7 @@ public class BackgroundMode {
         }
     };
 
-    public void onPause() {
+    public void onStop() {
         mInBackground = true;
         if (!isEnabled()) {
             return;
@@ -78,15 +78,6 @@ public class BackgroundMode {
         } finally {
             clearKeyguardFlags();
         }
-    }
-
-    public void onStop() {
-        mInBackground = true;
-        if (!isEnabled()) {
-            return;
-        }
-
-        clearKeyguardFlags();
 
         /**
          * When activity loses focus, if disableWebViewOptimization setting is true, tell the android.webkit.WebView that it is still visible.

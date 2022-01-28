@@ -47,14 +47,6 @@ public class BackgroundModePlugin extends Plugin {
     }
 
     /**
-     * Called when the system is about to start resuming a previous activity.
-     */
-    @Override
-    protected void handleOnPause() {
-        backgroundMode.onPause();
-    }
-
-    /**
      * Called when the activity is no longer visible to the user.
      */
     @Override
