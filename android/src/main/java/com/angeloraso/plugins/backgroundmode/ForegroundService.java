@@ -77,13 +77,12 @@ public class ForegroundService extends Service {
     }
 
     /**
-     * START_REDELIVER_INTENT: If the service's process (the App) is killed before it calls stopSelf() for a given intent,
-     * that intent will be re-delivered to it until it completes (unless after some number of more tries it still
-     * can't complete, at which point the system gives up).
+     * START_NOT_STICKY: if the process (the App) is killed with no remaining start commands to deliver,
+     * then the service will be stopped instead of restarted
      */
     @Override
-    public int onStartCommand (Intent intent, int flags, int startId) {
-        return START_REDELIVER_INTENT;
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
     }
 
     /**
